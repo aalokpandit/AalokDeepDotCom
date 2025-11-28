@@ -9,6 +9,11 @@
       "serve": "/index.html",
       "statusCode": 200
     }
-  ]
+  ],
+  "build": {
+    "appLocation": ".",
+    "appBuildCommand": "echo 'Pre-built output in out/ directory'",
+    "outputLocation": "out"
+  }
 }
 
