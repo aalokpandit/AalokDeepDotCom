@@ -69,8 +69,9 @@ export default function Home() {
         </div>
 
         {/* Footer / Socials */}
-        <footer className="text-center text-slate-400 text-sm mt-12">
+        <footer className="text-center text-slate-400 text-sm mt-12 space-y-3">
           <p>© {new Date().getFullYear()} Aalok Deep Pandit. Built with Next.js.</p>
+          <p className="text-xs text-slate-500">v2025-11-28-02</p>
         </footer>
       </div>
     </main>
