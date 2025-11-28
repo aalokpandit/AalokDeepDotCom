@@ -1,0 +1,2 @@
+[config]
+command = echo Skipping Oryx build - using pre-built output
