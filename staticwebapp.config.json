@@ -9,11 +9,6 @@
       "serve": "/index.html",
       "statusCode": 200
     }
-  ],
-  "build": {
-    "appLocation": "out",
-    "outputLocation": "",
-    "appBuildCommand": ""
-  }
+  ]
 }
 
