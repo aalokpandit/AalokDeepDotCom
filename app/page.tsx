@@ -1,3 +1,4 @@
+// Version: 2025-11-28 - Deployment verification
 import Image from "next/image";
 import Link from "next/link";
 
