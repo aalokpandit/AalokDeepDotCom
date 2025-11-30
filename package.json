@@ -8,7 +8,10 @@
     "lint": "npm run lint --workspace=main-site"
   },
   "workspaces": [
-    "apps/*",
+        "apps/*",
     "packages/*"
-  ]  
+  ],
+  "devDependencies": {
+    "copy-files-from-to": "^3.0.0"
+  }
 }

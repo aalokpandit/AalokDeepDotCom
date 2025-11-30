@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
+import { RootLayout as SharedRootLayout } from "@aalokdeep/ui";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Aalok Deep Pandit",
   description: "Technologist and lifelong learner based in Los Angeles. Digital garden for experiments, insights on technology, and photography.",
+  icons: {
+    icon: "/images/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -11,10 +15,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+  return <SharedRootLayout>{children}</SharedRootLayout>;
 }
 
