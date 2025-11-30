@@ -47,25 +47,26 @@ export default function Home() {
           </div>
         </div>
 
-        {/* --- The "Hub" Navigation Links --- */}
+                {/* --- The "Hub" Navigation Links --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-200 pt-10">
-          <div className="block p-6 rounded-xl bg-white border border-slate-200 shadow-sm transition-all duration-200">
-            <div className="text-2xl mb-3">🛠️</div>
-            <h3 className="font-bold text-slate-800">The Workbench (Coming Soon...)</h3>
-            <p className="text-sm text-slate-500 mt-2">Project portfolio, code experiments & build logs.</p>
-          </div>
-
-          <div className="block p-6 rounded-xl bg-white border border-slate-200 shadow-sm transition-all duration-200">
-            <div className="text-2xl mb-3">✍️</div>
-            <h3 className="font-bold text-slate-800">The Journal (Coming Soon...)</h3>
-            <p className="text-sm text-slate-500 mt-2">Reflections on product, philosophy, and learning.</p>
-          </div>
-
-          <div className="block p-6 rounded-xl bg-white border border-slate-200 shadow-sm transition-all duration-200">
-            <div className="text-2xl mb-3">📷</div>
-            <h3 className="font-bold text-slate-800">The Gallery (Coming Soon...)</h3>
-            <p className="text-sm text-slate-500 mt-2">Visual stories and photography from LA & beyond.</p>
-          </div>
+          <HubLink
+            href="/coming-soon?feature=The+Workbench"
+            icon="🛠️"
+            title="The Workbench"
+            description="Project portfolio, code experiments & build logs."
+          />
+          <HubLink
+            href="/coming-soon?feature=The+Journal"
+            icon="✍️"
+            title="The Journal"
+            description="Reflections on product, philosophy, and learning."
+          />
+          <HubLink
+            href="/coming-soon?feature=The+Gallery"
+            icon="📷"
+            title="The Gallery"
+            description="Visual stories and photography from LA & beyond."
+          />
         </div>
 
         {/* Footer / Socials */}
