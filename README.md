@@ -1,138 +1,118 @@
-# Aalok Deep Pandit - Personal Website
+# Aalok Deep Pandit - Personal Monorepo
 
-A personal website built with Next.js, designed for online branding and showcasing work, blog posts, and photography.
+This monorepo contains the source code for the personal website and all related subdomains of Aalok Deep Pandit. It is built with Next.js and managed as a workspace using npm.
 
 ## Project Structure
 
+This project is a monorepo, structured to manage multiple applications and shared packages in a single repository.
+
 ```
 /
-├── app/
-│   ├── layout.tsx          # Root layout with metadata
-│   ├── page.tsx             # Landing page
-│   ├── under-construction/
-│   │   └── [section]/       # Temporary holding page for hub links
-│   ├── globals.css          # Global styles
-│   ├── blog/                # Blog section (future)
-│   ├── projects/            # Side projects portfolio (future)
-│   └── photography/         # Photography showcase (future)
-├── components/              # Reusable React components (future)
-├── public/
-│   └── images/              # Static images
+├── apps/
+│   ├── main-site/      # Source code for the main website (aalokdeep.com)
+│   └── ...             # Future apps for subdomains (blog, projects, etc.)
+├── packages/
+│   ├── ui/             # Shared React components (Layouts, Buttons, etc.)
+│   ├── assets/         # Shared static assets (images, fonts, etc.)
+│   └── ...             # Future shared packages (e.g., tsconfig, tailwind-config)
+├── scripts/
+│   └── copy-assets.js  # Script to copy shared assets to apps during build
 └── .github/
-    └── workflows/           # GitHub Actions for CI/CD
+    └── workflows/      # GitHub Actions for CI/CD
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and npm (or yarn/pnpm)
+- Node.js 18+ and npm
 - Git
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone <your-repo-url>
-cd AalokDeepDotCom
-```
+1.  Clone the repository:
+    ```bash
+    git clone <your-repo-url>
+    cd AalokDeepDotCom
+    ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2.  Install all dependencies for all workspaces:
+    ```bash
+    npm install
+    ```
 
-3. Run the development server:
+### Running the Development Server
+
+To run a specific application's development server, use the root-level npm scripts.
+
+**Run the main website:**
 ```bash
 npm run dev
 ```
+This will start the `main-site` application on [http://localhost:3000](http://localhost:3000).
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+## Core Concepts
 
-### Building for Production
+### Workspaces
 
-To create a static export for deployment:
+This repository uses [npm Workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces) to manage the multiple projects. The `workspaces` are defined in the root `package.json`, allowing for linked dependencies and streamlined development.
 
-```bash
-npm run build
+### Shared Packages
+
+-   **`@aalokdeep/ui`**: A package containing React components (e.g., `RootLayout`, `Header`, `Footer`) that are shared across all applications. This ensures a consistent look, feel, and structure.
+-   **`@aalokdeep/assets`**: A package containing static assets like images and fonts.
+
+### Asset Management
+
+Next.js applications can only serve static files from their own `public` directory. To share assets across all apps, we use a custom script:
+-   The `scripts/copy-assets.js` script automatically copies all files from `packages/assets/public` into each application's `public` folder.
+-   This script is triggered by the `predev` and `prebuild` hooks in each application's `package.json`.
+
+### Note on Tailwind CSS
+
+For Tailwind CSS to correctly generate stylesheets, the `tailwind.config.ts` file in **each app** must be configured to scan the shared UI package for class names. The `content` array should include a path to the UI package, like this:
+
+```js
+// in apps/main-site/tailwind.config.ts
+const config = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    '../../packages/ui/**/*.{js,ts,jsx,tsx,mdx}', // <-- Important!
+  ],
+  // ...
+};
 ```
-
-This will generate an `out` directory with all static files ready for deployment.
 
 ## Deployment to Azure Static Web Apps
 
-### Initial Setup
+Each application in the `apps` directory is intended to be deployed as a separate Azure Static Web App.
 
-1. **Create Azure Static Web App**:
-   - Go to the Azure Portal
-   - Create a new Static Web App resource
-   - Choose your subscription, resource group, and region
-   - Connect it to your GitHub repository
-   - Azure will automatically create a GitHub Actions workflow
+### Build Settings for an App (e.g., `main-site`)
 
-2. **Configure GitHub Secrets**:
-   - Azure will automatically add the `AZURE_STATIC_WEB_APPS_API_TOKEN` secret to your repository
-   - The workflow file (`.github/workflows/azure-static-web-apps.yml`) is already configured
+-   **App location**: `apps/main-site`
+-   **Api location**: (leave empty)
+-   **Output location**: `out` (or as configured in `next.config.js`)
 
-3. **Build Settings**:
-   - App location: `/`
-   - Api location: (leave empty)
-   - Output location: `out`
-
-### Custom Domain Setup
-
-1. In Azure Portal, go to your Static Web App
-2. Navigate to "Custom domains"
-3. Add your domain and follow the DNS configuration instructions
-4. Azure will provide DNS records to add to your domain registrar
-
-### Automated Deployment
-
-Once connected to GitHub:
-- Every push to the `main` branch will trigger a build and deployment
-- Pull requests will create preview deployments
-- The workflow is configured in `.github/workflows/azure-static-web-apps.yml`
-
-## Current Features
-
-- ✅ Static landing page with profile photo and introduction
-- ✅ Responsive design with Tailwind CSS
-- ✅ Dark mode support (system preference)
-- ✅ Optimized for static export
-
-## Future Features
-
-- [ ] Blog section for tech, parenting, and immigrant life posts
-- [ ] Side projects portfolio with GitHub links and YouTube demos
-- [ ] Photography showcase with Instagram and Google Photos integration
-- [ ] Navigation menu
-- [ ] Search functionality
-- [ ] RSS feed for blog
+The GitHub Actions workflows in `.github/workflows/` are configured to trigger deployments only when relevant files for a specific app or a shared package are changed.
 
 ## Technology Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Deployment**: Azure Static Web Apps
-- **CI/CD**: GitHub Actions
+-   **Framework**: Next.js 14 (App Router)
+-   **Language**: TypeScript
+-   **Styling**: Tailwind CSS
+-   **Deployment**: Azure Static Web Apps
+-   **CI/CD**: GitHub Actions
+-   **Package Manager**: npm Workspaces
 
-## Development
+## Available Scripts
 
-### Project Scripts
+All scripts should be run from the **root** of the repository.
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production (static export)
-- `npm run start` - Start production server (for testing)
-- `npm run lint` - Run ESLint
+-   `npm run dev`: Starts the development server for the `main-site`.
+-   `npm run build`: Builds the `main-site` for production.
+-   `npm run start`: Starts the production server for the `main-site`.
+-   `npm run lint`: Lints the `main-site` application.
 
-### Adding Content
+*(As more apps are added, more scripts will be added to the root `package.json` to manage them.)*
 
-1. **Update Landing Page**: Edit `app/page.tsx`
-2. **Replace Profile Photo**: Replace `public/images/profile-placeholder.svg` with your photo
-3. **Update Metadata**: Edit `app/layout.tsx` for SEO and page metadata
-
-## License
-
-Private project - All rights reserved
 

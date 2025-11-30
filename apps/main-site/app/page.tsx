@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-  return (
-    <main className="min-h-screen bg-[#FDFBF7] text-slate-800 flex items-center justify-center p-6">
+    return (
+    <div className="min-h-screen flex items-center justify-center p-6">
       <div className="max-w-3xl w-full space-y-12 py-12">
         {/* --- Header Section: Photo + Intro --- */}
         <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -68,14 +68,8 @@ export default function Home() {
             description="Visual stories and photography from LA & beyond."
           />
         </div>
-
-        {/* Footer / Socials */}
-        <footer className="text-center text-slate-400 text-sm mt-12 space-y-3">
-          <p>© {new Date().getFullYear()} Aalok Deep Pandit. Built with Next.js.</p>
-          <p className="text-xs text-slate-500">v2025-11-28-02</p>
-        </footer>
       </div>
-    </main>
+    </div>
   );
 }
 
@@ -104,3 +98,4 @@ function HubLink({
     </Link>
   );
 }
+
