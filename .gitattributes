@@ -1,0 +1,8 @@
+ *.txt text=auto
+ *.js text=auto
+ *.html text=auto
+ *.css text=auto
+ *.ts text=auto
+ *.tsx text=auto
+ *.json text=auto
+ *.md text=auto
