@@ -39,7 +39,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "apps/main-site"
-          output_location: "apps/main-site/out"
+          output_location: "out"
           skip_app_build: true
 
   close_pull_request_job:
