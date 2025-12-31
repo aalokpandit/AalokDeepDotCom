@@ -8,7 +8,7 @@ interface NotFoundProps {
 
 export function NotFound({ title, message, children }: NotFoundProps) {
   return (
-    <main className="min-h-screen bg-[#FDFBF7] text-slate-800 flex items-center justify-center text-center p-6">
+    <section className="min-h-[60vh] flex items-center justify-center text-center p-6">
       <div className="space-y-6">
         <h1 className="text-6xl font-serif font-bold text-slate-900">{title}</h1>
         <p className="text-xl text-slate-600">{message}</p>
@@ -16,6 +16,6 @@ export function NotFound({ title, message, children }: NotFoundProps) {
           {children}
         </div>
       </div>
-    </main>
+    </section>
   );
 }

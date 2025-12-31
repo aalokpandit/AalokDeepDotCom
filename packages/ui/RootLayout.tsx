@@ -10,10 +10,10 @@ export function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="bg-[#FDFBF7]">
       <head />
-      <body className="text-slate-800">
+      <body className="text-slate-800 overflow-x-hidden">
         <div className="min-h-screen flex flex-col">
           <Header />
-          <main className="flex-grow">
+          <main className="flex-grow flex items-center justify-center overflow-hidden">
             {children}
           </main>
           <Footer />

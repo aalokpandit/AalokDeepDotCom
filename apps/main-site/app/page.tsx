@@ -4,8 +4,8 @@ import Link from "next/link";
 
 export default function Home() {
     return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="max-w-3xl w-full space-y-12 py-12">
+    <div className="flex items-center justify-center p-6">
+      <div className="max-w-3xl w-full space-y-12 py-8">
         {/* --- Header Section: Photo + Intro --- */}
         <div className="flex flex-col md:flex-row gap-8 items-start">
           {/* Photo Column */}
