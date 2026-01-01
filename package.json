@@ -3,8 +3,11 @@
   "private": true,
   "scripts": {
     "dev": "npm run dev --workspace=main-site",
+    "dev:workbench": "npm run dev --workspace=workbench",
     "build": "npm run build --workspace=main-site",
+    "build:workbench": "npm run build --workspace=workbench",
     "start": "npm run start --workspace=main-site",
+    "start:workbench": "npm run start --workspace=workbench",
     "lint": "npm run lint --workspace=main-site"
   },
   "workspaces": [
