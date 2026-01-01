@@ -8,6 +8,7 @@ const navLinks = [
   { href: '/coming-soon?feature=The+Workbench', label: 'Workbench' },
   { href: '/coming-soon?feature=The+Journal', label: 'Journal' },
   { href: '/coming-soon?feature=The+Gallery', label: 'Gallery' },
+  { href: 'https://memorygame.aalokdeep.com', label: 'Memory Game', external: true },
 ];
 
 export function Header() {
@@ -22,15 +23,27 @@ export function Header() {
           </Link>
 
           <div className="hidden md:flex items-center gap-6 text-sm text-slate-600">
-            {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-              >
-                {label}
-              </Link>
-            ))}
+            {navLinks.map(({ href, label, external }) => 
+              external ? (
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                >
+                  {label}
+                </a>
+              ) : (
+                <Link
+                  key={href}
+                  href={href}
+                  className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                >
+                  {label}
+                </Link>
+              )
+            )}
           </div>
 
           <button
@@ -52,16 +65,28 @@ export function Header() {
 
         {open && (
           <div className="md:hidden pb-4 space-y-2 text-sm text-slate-600">
-            {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="block px-2 py-2 rounded-md hover:bg-slate-100 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                onClick={() => setOpen(false)}
-              >
-                {label}
-              </Link>
-            ))}
+            {navLinks.map(({ href, label, external }) =>
+              external ? (
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block px-2 py-2 rounded-md hover:bg-slate-100 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                >
+                  {label}
+                </a>
+              ) : (
+                <Link
+                  key={href}
+                  href={href}
+                  className="block px-2 py-2 rounded-md hover:bg-slate-100 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                  onClick={() => setOpen(false)}
+                >
+                  {label}
+                </Link>
+              )
+            )}
           </div>
         )}
       </nav>
