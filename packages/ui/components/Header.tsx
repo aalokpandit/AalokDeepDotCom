@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 
 const navLinks = [
-  { href: '/', label: 'Home' },
+  { href: 'https://aalokdeep.com', label: 'Home', external: true },
   { href: 'https://workbench.aalokdeep.com', label: 'Workbench', external: true },
   { href: '/coming-soon?feature=The+Journal', label: 'Journal' },
   { href: '/coming-soon?feature=The+Gallery', label: 'Gallery' },
@@ -17,9 +17,9 @@ export function Header() {
     <header className="bg-white border-b border-slate-200">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-12">
-          <Link href="/" className="font-bold text-xl text-slate-800 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500">
+          <a href="https://aalokdeep.com" className="font-bold text-xl text-slate-800 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500">
             Aalok Deep Pandit
-          </Link>
+          </a>
 
           <div className="hidden md:flex items-center gap-6 text-sm text-slate-600">
             {navLinks.map(({ href, label, external }) => 
