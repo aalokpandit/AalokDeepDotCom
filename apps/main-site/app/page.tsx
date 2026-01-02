@@ -50,7 +50,7 @@ export default function Home() {
                 {/* --- The "Hub" Navigation Links --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-200 pt-10">
           <HubLink
-            href="/coming-soon?feature=The+Workbench"
+            href="https://workbench.aalokdeep.com"
             icon="🛠️"
             title="The Workbench"
             description="Project portfolio, code experiments & build logs."

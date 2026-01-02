@@ -5,10 +5,9 @@ import Link from 'next/link';
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/coming-soon?feature=The+Workbench', label: 'Workbench' },
+  { href: 'https://workbench.aalokdeep.com', label: 'Workbench', external: true },
   { href: '/coming-soon?feature=The+Journal', label: 'Journal' },
   { href: '/coming-soon?feature=The+Gallery', label: 'Gallery' },
-  { href: 'https://memorygame.aalokdeep.com', label: 'Memory Game', external: true },
 ];
 
 export function Header() {
@@ -17,7 +16,7 @@ export function Header() {
   return (
     <header className="bg-white border-b border-slate-200">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-12">
           <Link href="/" className="font-bold text-xl text-slate-800 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500">
             Aalok Deep Pandit
           </Link>

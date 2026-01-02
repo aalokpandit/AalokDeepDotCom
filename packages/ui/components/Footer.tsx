@@ -7,10 +7,21 @@ export function Footer() {
 
   return (
     <footer className="bg-white border-t border-slate-200">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center text-sm text-slate-600">
+      <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center text-sm text-slate-600">
         <p className="text-slate-500 text-center md:text-left">© {year} Aalok Deep Pandit. All Rights Reserved.</p>
 
         <div className="flex flex-wrap items-center justify-center gap-6">
+          <a
+            aria-label="Email"
+            className="flex items-center gap-2 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            href="mailto:hello@aalokdeep.com"
+          >
+            <svg className={iconClasses} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+            </svg>
+            <span>Email</span>
+          </a>
+
           <a
             aria-label="LinkedIn"
             className="flex items-center gap-2 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"

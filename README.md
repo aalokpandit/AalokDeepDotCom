@@ -2,6 +2,11 @@
 
 This monorepo contains the source code for the personal website and all related subdomains of Aalok Deep Pandit. It is built with Next.js and managed as a workspace using npm.
 
+## Live Sites
+
+- **Main Site**: [aalokdeep.com](https://aalokdeep.com)
+- **Workbench**: [workbench.aalokdeep.com](https://workbench.aalokdeep.com) - Project portfolio and showcase
+
 ## Project Structure
 
 This project is a monorepo, structured to manage multiple applications and shared packages in a single repository.
@@ -9,16 +14,17 @@ This project is a monorepo, structured to manage multiple applications and share
 ```
 /
 ├── apps/
-│   ├── main-site/      # Source code for the main website (aalokdeep.com)
-│   └── ...             # Future apps for subdomains (blog, projects, etc.)
+│   ├── main-site/      # Main website (aalokdeep.com)
+│   ├── workbench/      # Project portfolio (workbench.aalokdeep.com)
+│   └── ...             # Future apps (journal, gallery, etc.)
 ├── packages/
-│   ├── ui/             # Shared React components (Layouts, Buttons, etc.)
+│   ├── ui/             # Shared React components (Header, Footer, RootLayout, etc.)
 │   ├── assets/         # Shared static assets (images, fonts, etc.)
-│   └── ...             # Future shared packages (e.g., tsconfig, tailwind-config)
+│   └── ...             # Future shared packages
 ├── scripts/
 │   └── copy-assets.js  # Script to copy shared assets to apps during build
 └── .github/
-    └── workflows/      # GitHub Actions for CI/CD
+    └── workflows/      # GitHub Actions for CI/CD (separate workflow per app)
 ```
 
 ## Getting Started
@@ -48,8 +54,30 @@ To run a specific application's development server, use the root-level npm scrip
 **Run the main website:**
 ```bash
 npm run dev
+# or explicitly
+npm run dev:main-site
 ```
-This will start the `main-site` application on [http://localhost:3000](http://localhost:3000).
+
+**Run the workbench:**
+```bash
+npm run dev:workbench
+```
+
+Applications will start on [http://localhost:3000](http://localhost:3000) (or the next available port).
+
+### Building for Production
+
+**Build the main website:**
+```bash
+npm run build
+# or explicitly
+npm run build:main-site
+```
+
+**Build the workbench:**
+```bash
+npm run build:workbench
+```
 
 ## Core Concepts
 
@@ -63,15 +91,31 @@ This repository uses [npm Workspaces](https://docs.npmjs.com/cli/v7/using-npm/wo
 -   **`@aalokdeep/assets`**: A package containing static assets like images and fonts.
 
 ### Asset Management
+deployed as a separate Azure Static Web App with its own custom domain and GitHub Actions workflow.
 
-Next.js applications can only serve static files from their own `public` directory. To share assets across all apps, we use a custom script:
--   The `scripts/copy-assets.js` script automatically copies all files from `packages/assets/public` into each application's `public` folder.
--   This script is triggered by the `predev` and `prebuild` hooks in each application's `package.json`.
+### Deployed Applications
 
-### Note on Tailwind CSS
+| App | Domain | Workflow | Azure Token Secret |
+|-----|--------|----------|-------------------|
+| main-site | aalokdeep.com | `azure-static-web-apps-main-site.yml` | `AZURE_STATIC_WEB_APPS_API_TOKEN_MAIN_SITE` |
+| workbench | workbench.aalokdeep.com | `azure-static-web-apps-workbench.yml` | `AZURE_STATIC_WEB_APPS_API_TOKEN_WORKBENCH` |
 
-For Tailwind CSS to correctly generate stylesheets, the `tailwind.config.ts` file in **each app** must be configured to scan the shared UI package for class names. The `content` array should include a path to the UI package, like this:
+### How It Works
 
+1. **Path Filtering**: Each workflow only triggers on changes to its app or shared packages
+2. **Independent Builds**: GitHub Actions builds the specific app when triggered
+3. **Static Export**: Next.js apps use `output: 'export'` to generate static HTML
+4. **Deployment**: The build output is uploaded to the respective Azure Static Web App
+
+### Path Filters
+
+Workflows trigger on changes to:
+- App-specific files: `apps/[app-name]/**`
+- Shared UI components: `packages/ui/**`
+- Shared assets: `packages/assets/**`
+- Workflow file itself: `.github/workflows/[workflow-name].yml`
+
+This ensures efficient CI/CD - only affected apps are rebuilt and deploy
 ```js
 // in apps/main-site/tailwind.config.ts
 const config = {
@@ -81,7 +125,13 @@ const config = {
   ],
   // ...
 };
-```
+``` with Static Export)
+-   **Language**: TypeScript
+-   **Styling**: Tailwind CSS
+-   **Icons**: Lucide React
+-   **Deployment**: Azure Static Web Apps
+-   **CI/CD**: GitHub Actions
+-   **Package Manager**: npm with Workspaces
 
 ## Deployment to Azure Static Web Apps
 
