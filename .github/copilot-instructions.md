@@ -1,0 +1,32 @@
+# Copilot Instructions
+- Monorepo managed with npm workspaces; apps live in apps/ and shared packages in packages/ per [README.md](README.md).
+- Primary apps: main-site (aalokdeep.com) and workbench (workbench.aalokdeep.com); both are Next.js 14 App Router projects with static export output and unoptimized images per [apps/main-site/next.config.mjs](apps/main-site/next.config.mjs) and [apps/workbench/next.config.mjs](apps/workbench/next.config.mjs).
+- Run commands from repo root: `npm run dev`/`npm run build` target main-site; `npm run dev:workbench`/`npm run build:workbench` target workbench; scripts delegate to workspace packages in [package.json](package.json).
+- Each app has predev/prebuild hooks that run [scripts/copy-assets.js](scripts/copy-assets.js) to copy shared assets from packages/assets/public into apps/main-site/public (note: destinations are fixed to main-site; adjust script if assets should reach other apps).
+- Shared UI comes from @aalokdeep/ui: [packages/ui/RootLayout.tsx](packages/ui/RootLayout.tsx) wraps pages with Header/Footer, cream background (#FDFBF7) and centered main; Header includes mobile nav toggle and external links, Footer renders contact/social links with current year.
+- Exported UI helpers in [packages/ui/index.tsx](packages/ui/index.tsx) include RootLayout, Header, Footer, ComingSoon, and NotFound; apps consume these instead of redefining layout chrome.
+- Tailwind scans app and shared UI paths per [apps/main-site/tailwind.config.ts](apps/main-site/tailwind.config.ts) and [apps/workbench/tailwind.config.ts](apps/workbench/tailwind.config.ts); keep shared component file extensions under those globs to avoid unstyled output.
+- Main-site layout simply proxies to the shared RootLayout and sets metadata in [apps/main-site/app/layout.tsx](apps/main-site/app/layout.tsx); homepage content lives in [apps/main-site/app/page.tsx](apps/main-site/app/page.tsx) with hero, hub links, and Next Image headshot.
+- Coming soon routing uses query param feature names via [apps/main-site/app/coming-soon/page.tsx](apps/main-site/app/coming-soon/page.tsx) and [packages/ui/ComingSoon.tsx](packages/ui/ComingSoon.tsx); preserve the Suspense wrapper when modifying.
+- 404 handling reuses [packages/ui/NotFound.tsx](packages/ui/NotFound.tsx) from [apps/main-site/app/not-found.tsx](apps/main-site/app/not-found.tsx); pass children for CTA buttons.
+- Workbench shares the same RootLayout via [apps/workbench/app/layout.tsx](apps/workbench/app/layout.tsx); global styles in app/globals.css override layout spacing (notably main flex centering from UI RootLayout).
+- Project data is static and lives in [apps/workbench/lib/projects.ts](apps/workbench/lib/projects.ts); adding or editing projects requires updating this array (id, metadata, progressLog) and optional liveLink.
+- Routing for project detail pages depends on generateStaticParams in [apps/workbench/app/projects/[id]/page.tsx](apps/workbench/app/projects/[id]/page.tsx); new project ids must be present in projects.ts or pages will 404 at build time.
+- Project listing grids use [apps/workbench/components/ProjectList.tsx](apps/workbench/components/ProjectList.tsx) and cards in [apps/workbench/components/ProjectCard.tsx](apps/workbench/components/ProjectCard.tsx); cards link to /projects/[id] and expect image + alt text.
+- Collapsible sections for project details are implemented in [apps/workbench/components/Collapsible.tsx](apps/workbench/components/Collapsible.tsx) (client component with ChevronDown); reuse it for accordion-style content.
+- Landing page copy for Workbench lives in [apps/workbench/app/page.tsx](apps/workbench/app/page.tsx); the all-projects view is [apps/workbench/app/projects/page.tsx](apps/workbench/app/projects/page.tsx) and reuses getAllProjects.
+- Both apps use Next Image with unoptimized export; if adding remote images, ensure domains/remotePatterns are added to each app's next.config to avoid build issues.
+- Static export output is under out/ for deployments (Azure Static Web Apps); workflows trigger per-app based on path filters noted in [README.md](README.md).
+- Styling conventions: utility-first Tailwind, serif headings and slate text; body background set on html by RootLayout, so avoid overriding without intent.
+- No tests are present; validation relies on next build/lint from each workspace. Prefer running lint/build for the affected workspace before committing.
+- When adding shared assets, place them in packages/assets/public so predev/prebuild copies them; if another app needs different destinations, extend the copy script accordingly.
+- Keep new shared components in packages/ui and re-export through index.tsx so both apps can import via @aalokdeep/ui without deep paths.
+- Metadata (title/description/icons) is defined per app in app/layout.tsx files; update there rather than inside pages.
+- Avoid introducing server-only APIs; both apps are static-exported and expect zero runtime server dependencies.
+- Ensure new routes/components remain App Router compatible (use client directive only when hooks are needed).
+- Prefer consistent CTA styling with the slate/blue palette seen in Header/Footer and Workbench links.
+- If modifying navigation links, update navLinks array in [packages/ui/components/Header.tsx](packages/ui/components/Header.tsx) so all apps stay in sync.
+- Keep globals.css files aligned with shared layout padding/margins; RootLayout centers children vertically, so page components often wrap content in their own main to control spacing.
+- Data additions to projects.ts should use ISO date strings for progressLog to keep date formatting working.
+- For 404 or coming-soon flows in new apps, reuse NotFound and ComingSoon from @aalokdeep/ui to maintain consistent UX.
+- Deployment secrets and Azure Static Web App mapping are documented in [README.md](README.md); follow existing patterns when adding new apps/workflows.

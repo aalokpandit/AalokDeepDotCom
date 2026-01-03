@@ -7,3 +7,4 @@ out/
 npm-debug.log*
 dist/
 coverage/
+apps/main-site/api/local.settings.json
