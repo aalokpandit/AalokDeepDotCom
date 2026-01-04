@@ -3,6 +3,11 @@
  * Reuses connection across function invocations
  */
 
+// Ensure crypto is available (required for Cosmos SDK)
+if (typeof crypto === 'undefined') {
+  global.crypto = require('crypto').webcrypto || require('crypto');
+}
+
 const { CosmosClient } = require('@azure/cosmos');
 
 let cosmosClient = null;
