@@ -75,9 +75,16 @@ async function handleGetProjects(request, context) {
     return successResponse(projects, request, true); // cached=true (1 hour)
   } catch (error) {
     context.error('Error fetching projects:', error);
+    context.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      statusCode: error.statusCode,
+      body: error.body,
+      stack: error.stack?.split('\n').slice(0, 3).join('\n')
+    });
     return errorResponse(
       'FETCH_ERROR',
-      'Failed to fetch projects',
+      `Failed to fetch projects: ${error.message}`,
       500,
       request
     );
