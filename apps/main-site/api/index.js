@@ -7,5 +7,6 @@ const { app } = require('@azure/functions');
 
 // Import consolidated function handlers
 require('./projects');
+require('./uploadImageToken');
 
 module.exports = app;

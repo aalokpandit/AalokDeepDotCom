@@ -116,6 +116,14 @@ export interface UpdateProgressLogRequest {
 }
 
 /**
+ * Response from image upload token generation endpoint
+ */
+export interface ImageUploadTokenResponse {
+  sasUrl: string;  // Full URL with SAS token for direct upload to Blob
+  blobUrl: string; // Public URL (without SAS) to store in Cosmos DB
+}
+
+/**
  * Cosmos DB document response (includes internal fields for reference)
  * Not exported to API responses, kept internal
  */

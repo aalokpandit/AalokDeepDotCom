@@ -8,3 +8,6 @@ npm-debug.log*
 dist/
 coverage/
 apps/main-site/api/local.settings.json
+apps/main-site/public/images/
+apps/workbench/public/images/
+packages/assets/public/images/
