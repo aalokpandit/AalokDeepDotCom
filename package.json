@@ -8,13 +8,15 @@
     "build:workbench": "npm run build --workspace=workbench",
     "start": "npm run start --workspace=main-site",
     "start:workbench": "npm run start --workspace=workbench",
-    "lint": "npm run lint --workspace=main-site"
+    "lint": "npm run lint --workspace=main-site",
+    "seed:cosmos": "node scripts/seed-cosmos.js"
   },
   "workspaces": [
         "apps/*",
     "packages/*"
   ],
   "devDependencies": {
+    "@azure/cosmos": "^4.1.1",
     "copy-files-from-to": "^3.0.0"
   }
 }

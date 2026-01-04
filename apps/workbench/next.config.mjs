@@ -1,12 +1,21 @@
 /**
- * Next.js config for static export.
- * - output: 'export' makes `next build` generate `out/`
- * - images.unoptimized allows next/image with static export
+ * Next.js config for workbench app.
+ * - Removed 'output: export' to enable dynamic rendering with API calls
+ * - Functions APIs are called at runtime from the pages
+ * - images.unoptimized allows next/image without optimization
  */
 const nextConfig = {
-  output: 'export',
   images: {
     unoptimized: true,
+  },
+  async redirects() {
+    return [
+      {
+        source: '/projects',
+        destination: '/',
+        permanent: true, // 301 redirect
+      },
+    ];
   },
 };
 

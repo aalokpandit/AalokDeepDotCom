@@ -17,23 +17,23 @@ export default function Collapsible({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+    <div className="border border-slate-200 rounded-lg overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+        className="w-full px-6 py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors"
       >
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+        <h3 className="text-lg font-semibold text-slate-900">
           {title}
         </h3>
         <ChevronDown
           size={20}
-          className={`text-slate-600 dark:text-slate-400 transition-transform ${
+          className={`text-slate-600 transition-transform ${
             isOpen ? 'transform rotate-180' : ''
           }`}
         />
       </button>
       {isOpen && (
-        <div className="px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+        <div className="px-6 py-4 bg-white border-t border-slate-200">
           {children}
         </div>
       )}

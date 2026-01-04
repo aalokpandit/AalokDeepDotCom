@@ -1,12 +1,24 @@
 'use client';
 
-import ProjectCard, { ProjectData } from './ProjectCard';
+import ProjectCard, { ProjectCardData } from './ProjectCard';
 
 interface ProjectListProps {
-  projects: ProjectData[];
+  projects: ProjectCardData[];
 }
 
 export default function ProjectList({ projects }: ProjectListProps) {
+  // Defensive check: ensure projects is an array
+  if (!Array.isArray(projects)) {
+    console.error('ProjectList: projects is not an array', projects);
+    return (
+      <div className="py-12 text-center">
+        <p className="text-lg text-red-500">
+          Error loading projects: Invalid data format
+        </p>
+      </div>
+    );
+  }
+
   if (projects.length === 0) {
     return (
       <div className="py-12 text-center">
