@@ -6,6 +6,12 @@ interface ProjectDetailPageProps {
 
 // Generate static params at build time for static export
 export async function generateStaticParams() {
+  // Fallback project IDs in case API fetch fails during build
+  const fallbackIds = [
+    { id: 'personal-website' },
+    { id: 'classic-memory-game' },
+  ];
+
   try {
     const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
     const response = await fetch(`${apiBase}/api/projects`, {
@@ -13,19 +19,24 @@ export async function generateStaticParams() {
     });
     
     if (!response.ok) {
-      console.warn('Failed to fetch projects for generateStaticParams, returning empty array');
-      return [];
+      console.warn('Failed to fetch projects for generateStaticParams, using fallback IDs');
+      return fallbackIds;
     }
     
     const data = await response.json();
     const projects = data.data || [];
     
+    if (projects.length === 0) {
+      console.warn('No projects returned from API, using fallback IDs');
+      return fallbackIds;
+    }
+    
     return projects.map((project: { id: string }) => ({
       id: project.id,
     }));
   } catch (error) {
-    console.error('Error in generateStaticParams:', error);
-    return [];
+    console.error('Error in generateStaticParams:', error, 'using fallback IDs');
+    return fallbackIds;
   }
 }
 
