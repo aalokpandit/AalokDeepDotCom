@@ -19,19 +19,23 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
     async function fetchProject() {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
+        console.log(`[ProjectDetail] Fetching project ${projectId} from:`, `${apiBase}/api/projects/${projectId}`);
         const response = await fetch(`${apiBase}/api/projects/${projectId}`);
 
         if (!response.ok) {
           if (response.status === 404) {
+            console.log(`[ProjectDetail] Project ${projectId} not found (404)`);
             setProject(null);
           } else {
             throw new Error('Failed to fetch project');
           }
         } else {
           const data = await response.json();
+          console.log(`[ProjectDetail] Fetched project ${projectId}:`, data);
           setProject(data.data || null);
         }
       } catch (err) {
+        console.error(`[ProjectDetail] Error fetching project ${projectId}:`, err);
         setError(err instanceof Error ? err.message : 'Failed to load project');
       } finally {
         setLoading(false);
