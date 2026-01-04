@@ -14,6 +14,7 @@ export default function WorkbenchHome() {
     async function fetchProjects() {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
+        console.log('Fetching projects from:', `${apiBase}/api/projects`);
         const response = await fetch(`${apiBase}/api/projects`);
 
         if (!response.ok) {
@@ -21,6 +22,7 @@ export default function WorkbenchHome() {
         }
 
         const data = await response.json();
+        console.log('Fetched projects:', data);
         setProjects(data.data || []);
       } catch (err) {
         console.error('Failed to fetch projects:', err);
