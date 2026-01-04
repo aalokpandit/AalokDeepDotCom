@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+    const headshotUrl = process.env.NEXT_PUBLIC_HEADSHOT_URL || '/images/AalokPanditHeadshot.png';
+    
     return (
     <div className="flex items-center justify-center p-6">
       <div className="max-w-3xl w-full space-y-12 py-8">
@@ -12,7 +14,7 @@ export default function Home() {
           <div className="flex-shrink-0 mx-auto md:mx-0">
             <div className="relative w-40 h-40 md:w-48 md:h-48">
               <Image
-                src="/images/AalokPanditHeadshot.png"
+                src={headshotUrl}
                 alt="Aalok Deep Pandit"
                 fill
                 className="object-cover rounded-2xl shadow-sm rotate-2 hover:rotate-0 transition-transform duration-300"

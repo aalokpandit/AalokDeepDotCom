@@ -38,6 +38,8 @@ jobs:
         run: npm ci
       
       - name: Build application
+        env:
+          NEXT_PUBLIC_API_BASE: https://aalokdeep.com
         run: npm run build:workbench
       
       - name: Deploy to Azure Static Web Apps

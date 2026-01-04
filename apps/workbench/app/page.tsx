@@ -1,10 +1,36 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import ProjectList from '@/components/ProjectList';
-import { getAllProjects } from '@/lib/projects';
+import type { Project } from '@aalokdeep/types';
 
 export default function WorkbenchHome() {
-  const projects = getAllProjects();
+  const [projects, setProjects] = useState<
+    Pick<Project, 'id' | 'title' | 'description' | 'heroImage'>[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
+        const response = await fetch(`${apiBase}/api/projects`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects');
+        }
+
+        const data = await response.json();
+        setProjects(data.data || []);
+      } catch (err) {
+        console.error('Failed to fetch projects:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProjects();
+  }, []);
 
   return (
     <main className="bg-[#FDFBF7] text-slate-800">
@@ -27,7 +53,13 @@ export default function WorkbenchHome() {
           <h2 className="text-2xl md:text-3xl font-bold mb-12 text-slate-900">
             Featured Projects
           </h2>
-          <ProjectList projects={projects} />
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-slate-600">Loading projects...</p>
+            </div>
+          ) : (
+            <ProjectList projects={projects} />
+          )}
         </section>
       </div>
     </main>

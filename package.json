@@ -8,13 +8,18 @@
     "build:workbench": "npm run build --workspace=workbench",
     "start": "npm run start --workspace=main-site",
     "start:workbench": "npm run start --workspace=workbench",
-    "lint": "npm run lint --workspace=main-site"
+    "lint": "npm run lint --workspace=main-site",
+    "seed:cosmos": "node scripts/seed-cosmos.js",
+    "migrate:images": "node scripts/migrate-images-to-blob.js"
   },
   "workspaces": [
         "apps/*",
     "packages/*"
   ],
   "devDependencies": {
-    "copy-files-from-to": "^3.0.0"
+    "@azure/cosmos": "^4.1.1",
+    "@azure/storage-blob": "^12.17.0",
+    "copy-files-from-to": "^3.0.0",
+    "dotenv": "^16.0.0"
   }
 }

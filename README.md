@@ -79,6 +79,39 @@ npm run build:main-site
 npm run build:workbench
 ```
 
+## Architecture
+
+As of January 2026, this monorepo has been rearchitected into a **3-tier dynamic architecture**:
+
+### Data Tier: Azure Cosmos DB NoSQL
+- **Database**: `workbench-content` (provisioned throughput: 1000 RU/s free tier)
+- **Container**: `projects` (stores all project metadata, progress logs, links)
+- **Connection**: Via `COSMOS_CONNECTION_STRING` environment variable
+- **Seeding**: Use `npm run seed:cosmos` to populate projects from initial data
+
+### API Tier: Azure Functions (Node.js)
+- **Location**: `apps/main-site/api/`
+- **Endpoints**:
+  - `GET /api/projects` - List all projects (card fields only, cached 1h)
+  - `GET /api/projects/{id}` - Get full project details (cached 1h)
+  - `POST /api/projects` - Create project (admin auth required)
+  - `PATCH /api/projects/{id}` - Update project (admin auth required)
+  - `POST /api/projects/{id}/upload-image-token` - Generate SAS token for Blob upload (admin auth)
+- **Auth**: Validates `x-ms-client-principal` header for admin handle `aalokpandit`
+- **CORS**: Allows `localhost:*`, `aalokdeep.com`, `workbench.aalokdeep.com`
+- **Deployment**: Via Azure Static Web Apps (Standard tier to support Functions)
+
+### Storage Tier: Azure Blob Storage
+- **Account**: `aalokdeepassets`
+- **Containers**: `main-site`, `workbench`, `journal`, `gallery`
+- **Images**: Now decoupled from codebase; stored as blobs with public read access
+- **SAS Tokens**: Generated via `POST /api/projects/{id}/upload-image-token` for secure uploads
+
+### UI Tier: Next.js (Dynamic)
+- **workbench app**: Removed `output: 'export'`; now fetches projects dynamically at runtime
+- **main-site app**: Headshot uses `NEXT_PUBLIC_HEADSHOT_URL` env var (falls back to `/public/images/` locally)
+- **Images**: Configure blob URLs in SWA environment settings; local dev uses fallback paths
+
 ## Core Concepts
 
 ### Workspaces
@@ -89,11 +122,19 @@ This repository uses [npm Workspaces](https://docs.npmjs.com/cli/v7/using-npm/wo
 
 -   **`@aalokdeep/ui`**: A package containing React components (e.g., `RootLayout`, `Header`, `Footer`) that are shared across all applications. This ensures a consistent look, feel, and structure.
 -   **`@aalokdeep/assets`**: A package containing static assets like images and fonts.
+-   **`@aalokdeep/types`**: Shared TypeScript interfaces for API requests/responses and database models.
 
 ### Asset Management
-deployed as a separate Azure Static Web App with its own custom domain and GitHub Actions workflow.
 
-### Deployed Applications
+Images are now stored in Azure Blob Storage and decoupled from the codebase:
+- **Migration Script**: Use `npm run migrate:images` to upload local images to Blob Storage
+- **Public Folders**: `.gitignore` now excludes `apps/*/public/images/` and `packages/assets/public/images/` to keep blob images out of version control
+- **Local Development**: Falls back to local `/public/images/` paths if environment variables are unset
+- **Production**: Blob Storage URLs set via SWA environment settings, no rebuild needed for image changes
+
+## Available Scripts
+
+All scripts should be run from the **root** of the repository.
 
 | App | Domain | Workflow | Azure Token Secret |
 |-----|--------|----------|-------------------|
