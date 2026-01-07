@@ -10,6 +10,14 @@ interface ProjectDetailClientProps {
   projectId: string;
 }
 
+/**
+ * Client component that fetches and displays full project details
+ * Uses useEffect for client-side data fetching from API
+ * Handles loading, error, and not-found states with appropriate UI
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.projectId - The project ID to fetch and display
+ */
 export default function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,19 +27,16 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
     async function fetchProject() {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
-        console.log(`[ProjectDetail] Fetching project ${projectId} from:`, `${apiBase}/api/projects/${projectId}`);
         const response = await fetch(`${apiBase}/api/projects/${projectId}`);
 
         if (!response.ok) {
           if (response.status === 404) {
-            console.log(`[ProjectDetail] Project ${projectId} not found (404)`);
             setProject(null);
           } else {
             throw new Error('Failed to fetch project');
           }
         } else {
           const data = await response.json();
-          console.log(`[ProjectDetail] Fetched project ${projectId}:`, data);
           setProject(data.data || null);
         }
       } catch (err) {

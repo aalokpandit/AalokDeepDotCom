@@ -8,6 +8,7 @@ on:
       - 'apps/workbench/**'
       - 'packages/ui/**'
       - 'packages/assets/**'
+      - '!docs/**'
       - '.github/workflows/azure-static-web-apps-workbench.yml'
   pull_request:
     types: [opened, synchronize, reopened, closed]
@@ -17,6 +18,7 @@ on:
       - 'apps/workbench/**'
       - 'packages/ui/**'
       - 'packages/assets/**'
+      - '!docs/**'
 
 jobs:
   build_and_deploy_job:

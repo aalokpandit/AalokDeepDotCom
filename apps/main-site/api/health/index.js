@@ -1,4 +1,11 @@
-const { app } = require('@azure/functions');
+/**
+ * Health API
+ *
+ * Endpoint: GET /api/health
+ * Purpose: Provides a lightweight health and environment diagnostics payload to verify
+ * runtime configuration (env vars present), Node version, and dependency availability.
+ * Useful for debugging deployment issues and as a readiness probe.
+ */const { app } = require('@azure/functions');
 
 /**
  * GET /api/health - Health check and environment diagnostics

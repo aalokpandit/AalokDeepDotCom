@@ -1,4 +1,15 @@
-const { app } = require('@azure/functions');
+/**
+ * Image Upload Token API
+ *
+ * Endpoint: POST /api/projects/{id}/upload-image-token
+ * Purpose: Generates a short-lived SAS token for direct client-side image upload to
+ * Azure Blob Storage. Admin-only via `validateAdmin`.
+ *
+ * Dependencies:
+ *  - Auth: validateAdmin, unauthorizedResponse
+ *  - HTTP helpers: successResponse, errorResponse, optionsResponse
+ *  - Blob: generateImageUploadSAS(containerName, blobName, expiryHours)
+ */const { app } = require('@azure/functions');
 const { validateAdmin, unauthorizedResponse } = require('../shared/auth');
 const { successResponse, errorResponse, optionsResponse } = require('../shared/httpHelpers');
 const { generateImageUploadSAS } = require('../shared/blobClient');

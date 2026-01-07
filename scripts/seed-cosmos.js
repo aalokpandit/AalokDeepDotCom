@@ -4,8 +4,11 @@
  * Cosmos DB Seeding Script
  * Creates database, containers, and seeds initial project data
  * 
+ * Purpose: Populate Cosmos DB with hardcoded project data for fresh setups or local dev
+ * Uses upsert to avoid duplicate errors on repeated runs
+ * 
  * Usage: node scripts/seed-cosmos.js
- * Environment: Requires COSMOS_CONNECTION_STRING env var
+ * Environment: Requires COSMOS_CONNECTION_STRING env var (reads from local.settings.json)
  */
 
 const fs = require('fs');

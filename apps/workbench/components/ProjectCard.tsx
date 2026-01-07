@@ -11,6 +11,14 @@ interface ProjectCardProps {
   project: ProjectCardData;
 }
 
+/**
+ * Project card component for grid display on workbench landing page
+ * Shows hero image, title, description, and hover effects
+ * Links to full project detail page at /projects/{id}
+ * 
+ * @param {Object} props - Component props
+ * @param {ProjectCardData} props.project - Project data (id, title, description, heroImage)
+ */
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link href={`/projects/${project.id}`}>
