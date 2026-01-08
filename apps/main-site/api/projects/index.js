@@ -49,12 +49,8 @@ app.http('projects', {
 });
 
 /**
- * GET /api/projects/{id} - Get full project details (public, cached)
- * PATCH /api/projects/{id} - Update project (admin only)
- */
-/**
  * Handler: /api/projects/{id}
- * - GET: Returns full project document by ID; 404 when not found
+ * - GET: Returns full project document by ID (public, cached); 404 when not found
  * - PATCH: Updates an existing project (admin-only); document id cannot be changed
  */
 app.http('projectById', {

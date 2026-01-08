@@ -9,7 +9,9 @@
  *  - Auth: validateAdmin, unauthorizedResponse
  *  - HTTP helpers: successResponse, errorResponse, optionsResponse
  *  - Blob: generateImageUploadSAS(containerName, blobName, expiryHours)
- */const { app } = require('@azure/functions');
+ */
+
+const { app } = require('@azure/functions');
 const { validateAdmin, unauthorizedResponse } = require('../shared/auth');
 const { successResponse, errorResponse, optionsResponse } = require('../shared/httpHelpers');
 const { generateImageUploadSAS } = require('../shared/blobClient');

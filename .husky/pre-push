@@ -7,7 +7,7 @@ echo "🔍 Running pre-push verification..."
 npm ci || exit 1
 
 # Build main-site (skip ESLint for speed; lint runs in CI)
-NEXT_DISABLE_ESLINT=1 npm run build --workspace=main-site || exit 1
+npx cross-env NEXT_DISABLE_ESLINT=1 npm run build --workspace=main-site || exit 1
 
 # Ensure API dependencies are installable
 ( cd apps/main-site/api && npm ci ) || exit 1

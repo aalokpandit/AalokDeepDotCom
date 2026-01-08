@@ -32,9 +32,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check (Next.js)
-        run: npm run build --workspace=main-site --if-present --dry-run
-
       - name: Install API deps
         run: |
           cd apps/main-site/api

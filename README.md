@@ -211,7 +211,7 @@ The GitHub Actions workflows in `.github/workflows/` are configured to trigger d
 
 ### Known Gotchas
 
-- **Workbench runtime fetching**: Workbench exports statically but fetches project data via `useEffect` at runtime—don't add `generateStaticParams` as routes depend on dynamic API calls.
+- **Workbench static export**: Workbench uses `generateStaticParams` to pre-render known project routes at build time, then fetches fresh data client-side via `useEffect` for up-to-date content.
 - **API dependencies**: Ensure `apps/main-site/api` runs `npm ci` prior to deployment.
 - **Environment variables**: Set SWA environment variables (Functions + Next.js) in Azure Portal.
 - **CORS**: Local dev uses dynamic localhost origin; production origins controlled via `staticwebapp.config.json`.
