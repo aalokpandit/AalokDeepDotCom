@@ -6,13 +6,13 @@ echo "🔍 Running pre-push verification..."
 # Ensure clean install
 npm ci || exit 1
 
-# Build main-site
-npm run build --workspace=main-site || exit 1
+# Build main-site (skip ESLint for speed; lint runs in CI)
+NEXT_DISABLE_ESLINT=1 npm run build --workspace=main-site || exit 1
 
 # Ensure API dependencies are installable
 ( cd apps/main-site/api && npm ci ) || exit 1
 
-# Build workbench against production API base
-npx cross-env NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench || exit 1
+# Build workbench against production API base (skip ESLint for speed)
+npx cross-env NEXT_DISABLE_ESLINT=1 NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench || exit 1
 
 echo "✅ Pre-push checks passed. Proceeding with push."
