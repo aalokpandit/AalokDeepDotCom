@@ -2,7 +2,23 @@
   "navigationFallback": {
     "rewrite": "/404.html"
   },
-  "routes": [],
+  "routes": [
+    {
+      "route": "/api/projects",
+      "methods": ["POST"],
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/projects/*",
+      "methods": ["PATCH"],
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/projects/*/upload-image-token",
+      "methods": ["POST"],
+      "allowedRoles": ["authenticated"]
+    }
+  ],
   "build": {
     "appLocation": ".",
     "appBuildCommand": "echo 'Pre-built output in out/ directory'",

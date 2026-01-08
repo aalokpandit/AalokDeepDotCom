@@ -2,6 +2,8 @@
 
 This monorepo contains the source code for the personal website and all related subdomains of Aalok Deep Pandit. It is built with Next.js and managed as a workspace using npm.
 
+**Requirements:** Node.js >= 18
+
 ## Live Sites
 
 - **Main Site**: [aalokdeep.com](https://aalokdeep.com)
@@ -78,6 +80,22 @@ npm run build:main-site
 ```bash
 npm run build:workbench
 ```
+
+### Pre-Push & Pre-Merge Verification
+
+Before pushing or merging, verify production builds locally:
+
+```bash
+# From repo root
+npm run verify:prod
+```
+
+This will:
+- Build `apps/main-site`
+- Install API dependencies (Functions)
+- Build `apps/workbench` against production API base (`https://aalokdeep.com`)
+
+Husky pre-push hook is installed via `npm run prepare` and runs the same checks automatically.
 
 ## Architecture
 
@@ -185,6 +203,20 @@ Each application in the `apps` directory is intended to be deployed as a separat
 -   **Output location**: `out` (or as configured in `next.config.js`)
 
 The GitHub Actions workflows in `.github/workflows/` are configured to trigger deployments only when relevant files for a specific app or a shared package are changed.
+
+### PR Preview Environments
+
+- Use **feature branches** and **pull requests** (PRs) instead of pushing to `main` directly.
+- PRs trigger the CI-only workflow (`ci-pr-checks.yml`) to lint and build both apps.
+- Azure Static Web Apps automatically creates **ephemeral PR preview environments** for each pull request, with a unique URL per PR. These previews are cleaned up when the PR closes.
+- Workbench builds against the production API base by default in PR builds. If you want a different base, set `NEXT_PUBLIC_API_BASE` as a repository secret and read it in the PR workflow.
+
+### Known Gotchas
+
+- **Workbench static export**: Workbench uses `generateStaticParams` to pre-render known project routes at build time, then fetches fresh data client-side via `useEffect` for up-to-date content.
+- **API dependencies**: Ensure `apps/main-site/api` runs `npm ci` prior to deployment.
+- **Environment variables**: Set SWA environment variables (Functions + Next.js) in Azure Portal.
+- **CORS**: Local dev uses dynamic localhost origin; production origins controlled via `staticwebapp.config.json`.
 
 ## Technology Stack
 

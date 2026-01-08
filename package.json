@@ -9,6 +9,12 @@
     "start": "npm run start --workspace=main-site",
     "start:workbench": "npm run start --workspace=workbench",
     "lint": "npm run lint --workspace=main-site",
+    "verify:ci": "npm ci",
+    "verify:main": "cross-env NEXT_DISABLE_ESLINT=1 npm run build --workspace=main-site",
+    "verify:api": "cd apps/main-site/api && npm ci",
+    "verify:workbench": "cross-env NEXT_DISABLE_ESLINT=1 NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench",
+    "verify:prod": "npm run verify:ci && npm run verify:main && npm run verify:api && npm run verify:workbench",
+    "prepare": "husky install",
     "seed:cosmos": "node scripts/seed-cosmos.js",
     "migrate:images": "node scripts/migrate-images-to-blob.js"
   },
@@ -16,10 +22,15 @@
         "apps/*",
     "packages/*"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@azure/cosmos": "^4.1.1",
     "@azure/storage-blob": "^12.17.0",
     "copy-files-from-to": "^3.0.0",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "husky": "^9.0.0",
+    "cross-env": "^7.0.3"
   }
 }

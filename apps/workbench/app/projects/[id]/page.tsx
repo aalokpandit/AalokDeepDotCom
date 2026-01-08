@@ -17,25 +17,22 @@ export async function generateStaticParams() {
     const response = await fetch(`${apiBase}/api/projects`, {
       cache: 'no-store',
     });
-    
+
     if (!response.ok) {
-      console.warn('Failed to fetch projects for generateStaticParams, using fallback IDs');
       return fallbackIds;
     }
-    
+
     const data = await response.json();
     const projects = data.data || [];
-    
+
     if (projects.length === 0) {
-      console.warn('No projects returned from API, using fallback IDs');
       return fallbackIds;
     }
-    
+
     return projects.map((project: { id: string }) => ({
       id: project.id,
     }));
   } catch (error) {
-    console.error('Error in generateStaticParams:', error, 'using fallback IDs');
     return fallbackIds;
   }
 }

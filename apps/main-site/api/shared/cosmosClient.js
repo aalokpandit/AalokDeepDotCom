@@ -1,6 +1,7 @@
 /**
  * Cosmos DB client singleton
- * Reuses connection across function invocations
+ * Reuses connection across function invocations for performance
+ * Handles crypto polyfill required by Cosmos SDK in Node.js environment
  */
 
 // Ensure crypto is available (required for Cosmos SDK)
@@ -22,30 +23,20 @@ function getCosmosClient() {
   if (!CONNECTION_STRING) {
     throw new Error('COSMOS_CONNECTION_STRING environment variable not set');
   }
-
-  if (!cosmosClient) {
-    cosmosClient = new CosmosClient({ connectionString: CONNECTION_STRING });
-  }
-
-  return cosmosClient;
+  return cosmosClient ??= new CosmosClient({ connectionString: CONNECTION_STRING });
 }
 
 function getDatabase() {
-  if (!database) {
-    const client = getCosmosClient();
-    database = client.database(DATABASE_ID);
-  }
-
-  return database;
+  return database ??= getCosmosClient().database(DATABASE_ID);
 }
 
+/**
+ * Gets or creates the projects container singleton
+ * Container stores all project documents with /id as partition key
+ * @returns {import('@azure/cosmos').Container} Cosmos DB container for projects
+ */
 function getProjectsContainer() {
-  if (!projectsContainer) {
-    const db = getDatabase();
-    projectsContainer = db.container(PROJECTS_CONTAINER_ID);
-  }
-
-  return projectsContainer;
+  return projectsContainer ??= getDatabase().container(PROJECTS_CONTAINER_ID);
 }
 
 module.exports = {

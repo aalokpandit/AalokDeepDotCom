@@ -12,8 +12,5 @@
     "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.17.0"
   },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
-  }
+  "devDependencies": {}
 }
