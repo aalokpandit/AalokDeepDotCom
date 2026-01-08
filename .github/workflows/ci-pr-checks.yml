@@ -1,0 +1,50 @@
+name: CI Checks (PR Only)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'scripts/**'
+      - 'package.json'
+      - '.github/workflows/ci-pr-checks.yml'
+
+jobs:
+  ci_checks:
+    runs-on: ubuntu-latest
+    name: Lint, Type Check, Build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint main-site
+        run: npm run lint --workspace=main-site
+
+      - name: Type check (Next.js)
+        run: npm run build --workspace=main-site --if-present --dry-run
+
+      - name: Install API deps
+        run: |
+          cd apps/main-site/api
+          npm ci
+
+      - name: Build main-site
+        run: npm run build --workspace=main-site
+
+      - name: Build workbench (PR)
+        env:
+          NEXT_PUBLIC_API_BASE: ${{ secrets.STAGING_API_BASE || 'https://aalokdeep.com' }}
+        run: npm run build:workbench

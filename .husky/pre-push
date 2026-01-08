@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running pre-push verification..."
+
+# Ensure clean install
+npm ci || exit 1
+
+# Lint main-site
+npm run lint --workspace=main-site || exit 1
+
+# Build main-site
+npm run build --workspace=main-site || exit 1
+
+# Ensure API dependencies are installable
+( cd apps/main-site/api && npm ci ) || exit 1
+
+# Build workbench against production API base
+npx cross-env NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench || exit 1
+
+echo "✅ Pre-push checks passed. Proceeding with push."
