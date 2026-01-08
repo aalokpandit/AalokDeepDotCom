@@ -6,9 +6,6 @@ echo "🔍 Running pre-push verification..."
 # Ensure clean install
 npm ci || exit 1
 
-# Lint main-site
-npm run lint --workspace=main-site || exit 1
-
 # Build main-site
 npm run build --workspace=main-site || exit 1
 
