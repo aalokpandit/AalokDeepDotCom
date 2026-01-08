@@ -15,7 +15,7 @@ on:
 jobs:
   ci_checks:
     runs-on: ubuntu-latest
-    name: Lint, Type Check, Build
+    name: Build Verification
     env:
       NEXT_DISABLE_ESLINT: '1'
     steps:

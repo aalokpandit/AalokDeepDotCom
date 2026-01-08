@@ -3,7 +3,7 @@
 
 echo "🔍 Running pre-push verification..."
 
-# Ensure clean install
+# Ensure dependencies are up to date (runs on every push; use --no-verify to skip if confident)
 npm ci || exit 1
 
 # Build main-site (skip ESLint for speed; lint runs in CI)

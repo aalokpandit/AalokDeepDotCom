@@ -17,10 +17,7 @@ const { getProjectsContainer } = require('../shared/cosmosClient');
 const { validateAdmin, unauthorizedResponse } = require('../shared/auth');
 const { successResponse, errorResponse, optionsResponse } = require('../shared/httpHelpers');
 
-/**
- * GET /api/projects - List all projects (public, cached)
- * POST /api/projects - Create new project (admin only)
- */
+
 /**
  * Handler: /api/projects
  * - GET: Returns array of projects with card fields (id, title, description, heroImage)

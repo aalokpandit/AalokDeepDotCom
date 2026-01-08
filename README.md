@@ -2,6 +2,8 @@
 
 This monorepo contains the source code for the personal website and all related subdomains of Aalok Deep Pandit. It is built with Next.js and managed as a workspace using npm.
 
+**Requirements:** Node.js >= 18
+
 ## Live Sites
 
 - **Main Site**: [aalokdeep.com](https://aalokdeep.com)
