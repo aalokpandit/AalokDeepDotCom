@@ -1,10 +1,11 @@
 /**
  * Next.js config for journal app.
- * - Dynamic routing via client components and Azure SWA routing
+ * - output: 'export' generates static HTML for SWA deployment
  * - images.unoptimized allows next/image without optimization
  * - remotePatterns allows Azure Blob Storage URLs for hero images
  */
 const nextConfig = {
+  output: 'export',
   images: {
     unoptimized: true,
     remotePatterns: [

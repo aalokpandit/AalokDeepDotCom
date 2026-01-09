@@ -1,11 +1,12 @@
 /**
  * Next.js config for workbench app.
- * - Dynamic routing via client components and Azure SWA routing
+ * - output: 'export' generates static HTML for SWA deployment
  * - Client-side useEffect calls fetch APIs dynamically for project data
  * - images.unoptimized allows next/image without optimization
  * - remotePatterns allows Azure Blob Storage URLs
  */
 const nextConfig = {
+  output: 'export',
   images: {
     unoptimized: true,
     remotePatterns: [

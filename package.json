@@ -9,6 +9,8 @@
     "start": "npm run start --workspace=main-site",
     "start:workbench": "npm run start --workspace=workbench",
     "lint": "npm run lint --workspace=main-site",
+    "lint:workbench": "npm run lint --workspace=workbench",
+    "lint:journal": "npm run lint --workspace=journal",
     "verify:ci": "npm ci",
     "verify:main": "cross-env NEXT_DISABLE_ESLINT=1 npm run build --workspace=main-site",
     "verify:api": "cd apps/main-site/api && npm ci",
