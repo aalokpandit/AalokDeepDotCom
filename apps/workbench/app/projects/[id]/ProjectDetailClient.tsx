@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import Collapsible from '@/components/Collapsible';
@@ -11,38 +10,33 @@ interface ProjectDetailClientProps {
   projectId: string;
 }
 
+/**
+ * Client component that fetches and displays full project details
+ * Uses useEffect for client-side data fetching from API
+ * Handles loading, error, and not-found states with appropriate UI
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.projectId - The project ID to fetch and display
+ */
 export default function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  function formatProgressDate(dateStr: string) {
-    const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
-    const d = isDateOnly ? new Date(`${dateStr}T00:00:00`) : new Date(dateStr);
-    return d.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }
-
   useEffect(() => {
     async function fetchProject() {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
-        console.log(`[ProjectDetail] Fetching project ${projectId} from:`, `${apiBase}/api/projects/${projectId}`);
         const response = await fetch(`${apiBase}/api/projects/${projectId}`);
 
         if (!response.ok) {
           if (response.status === 404) {
-            console.log(`[ProjectDetail] Project ${projectId} not found (404)`);
             setProject(null);
           } else {
             throw new Error('Failed to fetch project');
           }
         } else {
           const data = await response.json();
-          console.log(`[ProjectDetail] Fetched project ${projectId}:`, data);
           setProject(data.data || null);
         }
       } catch (err) {
@@ -121,21 +115,6 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
           </p>
         </section>
 
-        {/* Hero Image (square, full text width) */}
-        {project.heroImage?.url && (
-          <div className="mb-8">
-            <div className="relative w-full sm:w-1/2 mx-auto aspect-square rounded-lg overflow-hidden border border-slate-200">
-              <Image
-                src={project.heroImage.url}
-                alt={project.heroImage.alt || project.title}
-                fill
-                className="object-cover"
-                unoptimized
-              />
-            </div>
-          </div>
-        )}
-
         {/* About Section */}
         <Collapsible title="About This Project" defaultOpen={true}>
           <div className="prose prose-slate max-w-none">
@@ -152,25 +131,16 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
               {project.progressLog.map((entry, index) => (
                 <div key={index} className="border-l-2 border-blue-200 pl-4">
                   <time className="text-sm font-semibold text-blue-600">
-                    {formatProgressDate(entry.date)}
+                    {new Date(entry.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
                   </time>
                   <p className="text-slate-700 mt-1">{entry.description}</p>
                 </div>
               ))}
             </div>
-          </Collapsible>
-        )}
-
-        {/* Future Considerations Section (optional, between Progress Log and Links) */}
-        {project.futureConsiderations && project.futureConsiderations.length > 0 && (
-          <Collapsible title="Future Considerations" defaultOpen={false}>
-            <ul className="list-disc pl-6 space-y-2">
-              {project.futureConsiderations.map((item, idx) => (
-                <li key={idx} className="text-slate-700 leading-relaxed">
-                  {item}
-                </li>
-              ))}
-            </ul>
           </Collapsible>
         )}
 

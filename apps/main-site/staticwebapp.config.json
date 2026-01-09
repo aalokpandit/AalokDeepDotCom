@@ -4,9 +4,19 @@
   },
   "routes": [
     {
-      "route": "/*",
-      "allowedRoles": ["anonymous", "authenticated"],
-      "statusCode": 404
+      "route": "/api/projects",
+      "methods": ["POST"],
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/projects/*",
+      "methods": ["PATCH"],
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/projects/*/upload-image-token",
+      "methods": ["POST"],
+      "allowedRoles": ["authenticated"]
     }
   ],
   "build": {

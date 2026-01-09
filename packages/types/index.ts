@@ -49,7 +49,6 @@ export interface Project {
   progressLog: ProgressLogEntry[];
   links: ProjectLink[];
   detailImages?: ProjectImage[]; // Optional collection for details page
-  futureConsiderations?: string[]; // Optional backlog of ideas
 }
 
 /**
@@ -88,7 +87,6 @@ export interface CreateProjectRequest {
   progressLog?: ProgressLogEntry[];
   links?: ProjectLink[];
   detailImages?: ProjectImage[];
-  futureConsiderations?: string[];
 }
 
 /**

@@ -6,6 +6,14 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * Shared root layout wrapper for all apps
+ * Provides consistent structure: Header (top) → Main content (center) → Footer (bottom)
+ * Sets cream background (#FDFBF7) and slate text theme across apps
+ * 
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Page content to render in main section
+ */
 export function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="bg-[#FDFBF7]">

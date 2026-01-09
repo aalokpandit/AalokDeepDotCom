@@ -1,11 +1,27 @@
+/**
+ * Project API handlers
+ *
+ * Endpoints:
+ *  - GET /api/projects            → List projects (lightweight card fields, cached 1h)
+ *  - POST /api/projects           → Create project (admin only via validateAdmin)
+ *  - GET /api/projects/{id}       → Full project details (cached 1h)
+ *  - PATCH /api/projects/{id}     → Update project (admin only)
+ *
+ * Dependencies:
+ *  - Cosmos: `getProjectsContainer()` for database access
+ *  - Auth: `validateAdmin()` + `unauthorizedResponse()` for admin endpoints
+ *  - HTTP helpers: `successResponse()`, `errorResponse()`, `optionsResponse()` for consistent JSON + CORS
+ */
 const { app } = require('@azure/functions');
 const { getProjectsContainer } = require('../shared/cosmosClient');
 const { validateAdmin, unauthorizedResponse } = require('../shared/auth');
 const { successResponse, errorResponse, optionsResponse } = require('../shared/httpHelpers');
 
+
 /**
- * GET /api/projects - List all projects (public, cached)
- * POST /api/projects - Create new project (admin only)
+ * Handler: /api/projects
+ * - GET: Returns array of projects with card fields (id, title, description, heroImage)
+ * - POST: Creates a new project document (admin-only)
  */
 app.http('projects', {
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -30,8 +46,9 @@ app.http('projects', {
 });
 
 /**
- * GET /api/projects/{id} - Get full project details (public, cached)
- * PATCH /api/projects/{id} - Update project (admin only)
+ * Handler: /api/projects/{id}
+ * - GET: Returns full project document by ID (public, cached); 404 when not found
+ * - PATCH: Updates an existing project (admin-only); document id cannot be changed
  */
 app.http('projectById', {
   methods: ['GET', 'PATCH', 'OPTIONS'],
@@ -55,6 +72,15 @@ app.http('projectById', {
   },
 });
 
+/**
+ * Handles GET requests to fetch all projects with lightweight card fields
+ * Returns only id, title, description, and heroImage for efficient listing page loads
+ * Response is cached for 1 hour to reduce Cosmos RU consumption
+ * 
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request
+ * @param {import('@azure/functions').InvocationContext} context - Function execution context
+ * @returns {Promise<Object>} Success response with project array or error response
+ */
 async function handleGetProjects(request, context) {
   context.log('GET /api/projects - Fetching project list');
 
@@ -91,6 +117,15 @@ async function handleGetProjects(request, context) {
   }
 }
 
+/**
+ * Handles POST requests to create a new project (admin-only)
+ * Validates required fields, checks for duplicate IDs, and creates Cosmos document
+ * Requires x-ms-client-principal header with GitHub handle 'aalokpandit'
+ * 
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request with project data in body
+ * @param {import('@azure/functions').InvocationContext} context - Function execution context
+ * @returns {Promise<Object>} Success response with created project or error response
+ */
 async function handleCreateProject(request, context) {
   context.log('POST /api/projects - Creating new project');
 
@@ -103,12 +138,19 @@ async function handleCreateProject(request, context) {
 
   try {
     const projectData = await request.json();
+    const { id, title, description, heroImage } = projectData;
 
     // Validate required fields
-    if (!projectData.id || !projectData.title || !projectData.description || !projectData.heroImage) {
+    const missingFields = [];
+    if (!id) missingFields.push('id');
+    if (!title) missingFields.push('title');
+    if (!description) missingFields.push('description');
+    if (!heroImage) missingFields.push('heroImage');
+
+    if (missingFields.length > 0) {
       return errorResponse(
         'INVALID_REQUEST',
-        'Missing required fields: id, title, description, heroImage',
+        `Missing required fields: ${missingFields.join(', ')}`,
         400,
         request
       );
@@ -116,19 +158,17 @@ async function handleCreateProject(request, context) {
 
     // Ensure id doesn't already exist
     const container = getProjectsContainer();
-    const checkQuery = {
-      query: 'SELECT c.id FROM c WHERE c.id = @projectId',
-      parameters: [{ name: '@projectId', value: projectData.id }],
-    };
-
     const { resources: existing } = await container.items
-      .query(checkQuery)
+      .query({
+        query: 'SELECT c.id FROM c WHERE c.id = @projectId',
+        parameters: [{ name: '@projectId', value: id }],
+      })
       .fetchAll();
 
     if (existing.length > 0) {
       return errorResponse(
         'DUPLICATE_ID',
-        `Project with id '${projectData.id}' already exists`,
+        `Project with id '${id}' already exists`,
         409,
         request
       );
@@ -136,10 +176,10 @@ async function handleCreateProject(request, context) {
 
     // Create project document
     const newProject = {
-      id: projectData.id,
-      title: projectData.title,
-      description: projectData.description,
-      heroImage: projectData.heroImage,
+      id,
+      title,
+      description,
+      heroImage,
       detailedDescription: projectData.detailedDescription || '',
       progressLog: projectData.progressLog || [],
       links: projectData.links || [],
@@ -162,6 +202,15 @@ async function handleCreateProject(request, context) {
   }
 }
 
+/**
+ * Handles GET requests to fetch a single project's full details by ID
+ * Returns complete project document including progress log, links, and images
+ * Response is cached for 1 hour; returns 404 if project not found
+ * 
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request
+ * @param {import('@azure/functions').InvocationContext} context - Function execution context
+ * @returns {Promise<Object>} Success response with full project data or error response
+ */
 async function handleGetProjectById(request, context) {
   const projectId = request.params.id;
   context.log(`GET /api/projects/${projectId} - Fetching project details`);
@@ -217,6 +266,15 @@ async function handleGetProjectById(request, context) {
   }
 }
 
+/**
+ * Handles PATCH requests to update an existing project (admin-only)
+ * Merges updates with existing project data; prevents changing document ID
+ * Requires x-ms-client-principal header with GitHub handle 'aalokpandit'
+ * 
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request with update data in body
+ * @param {import('@azure/functions').InvocationContext} context - Function execution context
+ * @returns {Promise<Object>} Success response with updated project or error response
+ */
 async function handleUpdateProject(request, context) {
   const projectId = request.params.id;
   context.log(`PATCH /api/projects/${projectId} - Updating project`);

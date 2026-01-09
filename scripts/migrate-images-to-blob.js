@@ -2,6 +2,8 @@
  * Migration script: Upload existing images from local /public folders to Azure Blob Storage
  * and update Cosmos DB documents with new blob URLs.
  * 
+ * Purpose: Decouples images from codebase, enabling dynamic updates without rebuilds
+ * 
  * Images to migrate:
  * 1. apps/main-site/public/images/AalokPanditHeadshot.png → main-site container
  * 2. apps/workbench/public/images/memory-game-preview.png → workbench container (project hero)

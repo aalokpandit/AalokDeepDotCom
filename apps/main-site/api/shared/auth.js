@@ -1,14 +1,25 @@
 /**
- * Authorization middleware for admin-only endpoints
- * Checks x-ms-client-principal header for GitHub handle
+ * Authorization helpers for admin-only endpoints.
+ *
+ * These functions validate the `x-ms-client-principal` header that Azure Static Web Apps
+ * injects for authenticated users. Admin access is granted when the decoded principal's
+ * `userDetails` matches the configured GitHub handle (default: `aalokpandit`).
+ *
+ * Usage:
+ *  - Call `validateAdmin(request)` in handlers for POST/PATCH/DELETE endpoints.
+ *  - If unauthorized, return `unauthorizedResponse()` from the handler.
  */
 
 const ALLOWED_ADMIN = process.env.ALLOWED_ADMIN_GITHUB_HANDLE || 'aalokpandit';
 
 /**
- * Validates that the request comes from an authenticated admin user
- * @param {import('@azure/functions').HttpRequest} request
- * @returns {{ authorized: boolean, user?: string, error?: string }}
+ * Validates that the request comes from an authenticated admin user.
+ *
+ * Reads and decodes the `x-ms-client-principal` header (Base64 JSON). When the decoded
+ * `userDetails` matches `ALLOWED_ADMIN_GITHUB_HANDLE`, returns `{ authorized: true }`.
+ *
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request
+ * @returns {{ authorized: boolean, user?: string, error?: string }} Validation result
  */
 function validateAdmin(request) {
   const clientPrincipalHeader = request.headers.get('x-ms-client-principal');
@@ -48,8 +59,10 @@ function validateAdmin(request) {
 }
 
 /**
- * Creates a standardized 401 Unauthorized response
- * @param {string} message
+ * Creates a standardized 401 Unauthorized response.
+ *
+ * @param {string} message - Human-readable error message
+ * @returns {{ status: number, jsonBody: { success: false, error: { code: string, message: string }}}}
  */
 function unauthorizedResponse(message) {
   return {
@@ -65,8 +78,10 @@ function unauthorizedResponse(message) {
 }
 
 /**
- * Creates a standardized 403 Forbidden response
- * @param {string} message
+ * Creates a standardized 403 Forbidden response.
+ *
+ * @param {string} message - Human-readable error message
+ * @returns {{ status: number, jsonBody: { success: false, error: { code: string, message: string }}}}
  */
 function forbiddenResponse(message) {
   return {

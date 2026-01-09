@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react';
 import ProjectList from '@/components/ProjectList';
 import type { Project } from '@aalokdeep/types';
 
+/**
+ * Workbench landing page component
+ * Fetches project list from API on mount and displays in grid layout
+ * Uses client-side data fetching with loading/error states
+ */
 export default function WorkbenchHome() {
   const [projects, setProjects] = useState<
     Pick<Project, 'id' | 'title' | 'description' | 'heroImage'>[]
@@ -14,7 +19,6 @@ export default function WorkbenchHome() {
     async function fetchProjects() {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
-        console.log('Fetching projects from:', `${apiBase}/api/projects`);
         const response = await fetch(`${apiBase}/api/projects`);
 
         if (!response.ok) {
@@ -22,7 +26,6 @@ export default function WorkbenchHome() {
         }
 
         const data = await response.json();
-        console.log('Fetched projects:', data);
         setProjects(data.data || []);
       } catch (err) {
         console.error('Failed to fetch projects:', err);
@@ -40,7 +43,7 @@ export default function WorkbenchHome() {
         {/* Header Section */}
         <section className="mb-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
-            The Workbench
+            Workbench
           </h1>
           <p className="text-lg md:text-xl text-slate-700 max-w-3xl leading-relaxed">
             Welcome to my workbench. This is a curated collection of projects, experiments, and

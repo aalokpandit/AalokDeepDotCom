@@ -1,79 +1,73 @@
 # Copilot Instructions
 
-## Quick Reference
+## Architecture Overview (3-Tier Dynamic)
 
-For detailed architecture, data models, deployment, and design decisions, see [architecture.md](../../architecture.md).
+**Data Tier**: Azure Cosmos DB (workbench-content database/projects container and journal-content database/blogs container, 1000 RU/s provisioned throughput on workbench-content, free tier)
 
-## Development Guidelines
+**API Tier**: Azure Functions Node.js runtime in `apps/main-site/api/` with endpoints:
+- `GET /api/projects` (all projects, card fields, 1h cache)
+- `GET /api/projects/{id}` (full details, 1h cache)
+- `POST /api/projects` (admin auth: aalokpandit)
+- `PATCH /api/projects/{id}` (admin auth)
+- `POST /api/projects/{id}/upload-image-token` (admin auth, generates 1h SAS token for Blob upload)
+- `GET /api/blogs` (all blogs, list fields only, 1h cache)
+- `GET /api/blogs/{id}` (full blog with Markdown body, 1h cache)
 
-### File Organization & Imports
-- Shared UI: Keep components in `packages/ui/` and re-export via [packages/ui/index.tsx](packages/ui/index.tsx). Apps import via `@aalokdeep/ui`.
-- Shared types: Define in [packages/types/index.ts](packages/types/index.ts); all endpoints and UI use these.
-- Tailwind: Ensure app `tailwind.config.ts` scans `packages/ui/**/*.{tsx,jsx}` so styles are included.
+**Storage Tier**: Azure Blob Storage (aalokdeepassets account, containers: main-site, workbench, journal, gallery; images are public read, SAS tokens for uploads; journal hero images live in the `journal` container and fall back to alt text if fetch fails)
 
-### Dynamic Data & API
-- Project data: Fetch via `getAllProjects()` and `getProjectById(id)` from [apps/workbench/lib/projects.ts](apps/workbench/lib/projects.ts); 1h revalidate.
-- Blog data: Fetch via `getAllBlogs()` and `getBlogById(id)` from [apps/journal/lib/blogs.ts](apps/journal/lib/blogs.ts); 1h revalidate.
-- API base: Set `NEXT_PUBLIC_API_BASE` env var (prod: `https://aalokdeep.com`, local default: `http://localhost:7071`).
-- Client components: Use `'use client'` + `useEffect` for runtime fetches; detail routes use `useParams()` for dynamic segments.
+**UI Tier**: Next.js 14 App Router, workbench removed `output: 'export'` for dynamic rendering, main-site uses `NEXT_PUBLIC_HEADSHOT_URL` env var (falls back to /public/images/ locally)
 
-### UI Patterns
-- Layout: Reuse `RootLayout` from `@aalokdeep/ui`; it centers content with cream background (#FDFBF7).
-- 404/Coming Soon: Use `NotFound` and `ComingSoon` components from `@aalokdeep/ui` for consistent UX.
-- Date formatting: Parse ISO date strings as local midnight (`new Date('YYYY-MM-DDTHH:mm:ss')`) to avoid timezone shifts; never use bare `new Date(dateStr)` for date-only strings.
-- Hero images: Square, centered, responsive (`w-full sm:w-1/2 mx-auto aspect-square`).
-- Cards: Match project tiles styling: full-height, hover:shadow-xl, hover:scale-105, with h-48 image containers.
+## Monorepo & Development
 
-### Cosmos DB & Content
-- Progress log dates: Store as ISO strings `YYYY-MM-DD`; format locally to prevent UTC shifts.
-- Hero images: Object `{ url: "https://...", alt: "text" }` (required).
-- Future Considerations: Optional array of strings on projects; render as bulleted list in collapsible section.
-- Seeding: Run `npm run seed:cosmos` to populate Cosmos with initial data.
+- Monorepo managed with npm workspaces; apps live in apps/ and shared packages in packages/ per [README.md](README.md).
+- Primary apps: main-site (aalokdeep.com, also hosts API Functions), workbench (workbench.aalokdeep.com, dynamic project showcase), and journal (journal.aalokdeep.com, blog with summaries + detail pages).
+- main-site: Next.js 14 App Router with remotePatterns for blob.core.windows.net per [apps/main-site/next.config.mjs](apps/main-site/next.config.mjs).
+- workbench: Next.js 14 App Router (removed `output: 'export'`), fetches projects dynamically from API, also has remotePatterns for blobs per [apps/workbench/next.config.mjs](apps/workbench/next.config.mjs).
+- Run commands from repo root: `npm run dev`/`npm run build` target main-site; `npm run dev:workbench`/`npm run build:workbench` target workbench; scripts delegate to workspace packages in [package.json](package.json).
+- Each app has predev/prebuild hooks that run [scripts/copy-assets.js](scripts/copy-assets.js) to copy shared assets from packages/assets/public into apps/main-site/public (note: destinations are fixed to main-site; adjust script if assets should reach other apps).
+- Shared UI comes from @aalokdeep/ui: [packages/ui/RootLayout.tsx](packages/ui/RootLayout.tsx) wraps pages with Header/Footer, cream background (#FDFBF7) and centered main; Header includes mobile nav toggle and external links, Footer renders contact/social links with current year.
+- Exported UI helpers in [packages/ui/index.tsx](packages/ui/index.tsx) include RootLayout, Header, Footer, ComingSoon, and NotFound; apps consume these instead of redefining layout chrome.
+- Shared types in [packages/types/index.ts](packages/types/index.ts) define Project, Blog, ProgressLogEntry, ProjectLink, HeroImage, API response envelopes; imported by API handlers and UI pages.
+- Tailwind scans app and shared UI paths per [apps/main-site/tailwind.config.ts](apps/main-site/tailwind.config.ts), [apps/workbench/tailwind.config.ts](apps/workbench/tailwind.config.ts), and [apps/journal/tailwind.config.ts](apps/journal/tailwind.config.ts); keep shared component file extensions under those globs to avoid unstyled output.
+- Main-site layout simply proxies to the shared RootLayout and sets metadata in [apps/main-site/app/layout.tsx](apps/main-site/app/layout.tsx); homepage content lives in [apps/main-site/app/page.tsx](apps/main-site/app/page.tsx) with hero, hub links, and Next Image headshot (uses NEXT_PUBLIC_HEADSHOT_URL env var, falls back to /images/AalokPanditHeadshot.png).
+- Journal layout proxies to RootLayout; landing at [apps/journal/app/page.tsx](apps/journal/app/page.tsx) lists posts (title, summary, tags, optional hero) and supports multi-select OR tag filter; detail pages at [apps/journal/app/posts/[id]/page.tsx](apps/journal/app/posts/%5Bid%5D/page.tsx) render Markdown body with optional square hero and alt fallback.
+- Coming soon routing uses query param feature names via [apps/main-site/app/coming-soon/page.tsx](apps/main-site/app/coming-soon/page.tsx) and [packages/ui/ComingSoon.tsx](packages/ui/ComingSoon.tsx); preserve the Suspense wrapper when modifying.
+- 404 handling reuses [packages/ui/NotFound.tsx](packages/ui/NotFound.tsx) from [apps/main-site/app/not-found.tsx](apps/main-site/app/not-found.tsx); pass children for CTA buttons.
+- Workbench shares the same RootLayout via [apps/workbench/app/layout.tsx](apps/workbench/app/layout.tsx); global styles in app/globals.css override layout spacing (notably main flex centering from UI RootLayout).
+- Project data is now fetched dynamically from Cosmos via API at runtime; [apps/workbench/lib/projects.ts](apps/workbench/lib/projects.ts) exports async functions getAllProjects() and getProjectById(id) with 1h caching via Next.js revalidate.
+- Blog data is fetched dynamically via [apps/journal/lib/blogs.ts](apps/journal/lib/blogs.ts) using getAllBlogs() (title/summary/tags/hero) and getBlogById(id) (full Markdown body) with 1h caching hints.
+- Workbench pages are client components using useEffect to fetch projects: [apps/workbench/app/page.tsx](apps/workbench/app/page.tsx) (landing) and [apps/workbench/app/projects/[id]/page.tsx](apps/workbench/app/projects/[id]/page.tsx) (detail); no generateStaticParams needed anymore.
+- Project listing grids use [apps/workbench/components/ProjectList.tsx](apps/workbench/components/ProjectList.tsx) and cards in [apps/workbench/components/ProjectCard.tsx](apps/workbench/components/ProjectCard.tsx); cards link to /projects/[id] and expect heroImage.url and heroImage.alt from API response.
+- Journal listing uses [apps/journal/components/PostList.tsx](apps/journal/components/PostList.tsx) and [apps/journal/components/PostCard.tsx](apps/journal/components/PostCard.tsx); tag filter chips live in [apps/journal/components/TagChips.tsx](apps/journal/components/TagChips.tsx).
+- Collapsible sections for project details are implemented in [apps/workbench/components/Collapsible.tsx](apps/workbench/components/Collapsible.tsx) (client component with ChevronDown); reuse it for accordion-style content.
+- Landing page copy for Workbench lives in [apps/workbench/app/page.tsx](apps/workbench/app/page.tsx); removed redundant /projects listing (301 redirect from /projects to / per next.config).
+- All apps support remote images via remotePatterns for blob.core.windows.net; images unoptimized per static export behavior. Journal uses square hero when provided; no placeholder when absent.
+- API output is under out/ for main-site deployments (Azure Static Web Apps); workbench is fully dynamic. Workflows trigger per-app based on path filters noted in [README.md](README.md).
+- Styling conventions: utility-first Tailwind, serif headings and slate text; body background set on html by RootLayout, so avoid overriding without intent.
+- No tests are present; validation relies on next build/lint from each workspace. Prefer running lint/build for the affected workspace before committing.
+- When adding shared assets, place them in packages/assets/public so predev/prebuild copies them; if another app needs different destinations, extend the copy script accordingly. Images should be uploaded to Blob Storage via migrate:images script instead.
+- Keep new shared components in packages/ui and re-export through index.tsx so both apps can import via @aalokdeep/ui without deep paths.
+- Metadata (title/description/icons) is defined per app in app/layout.tsx files; update there rather than inside pages.
+- Avoid introducing server-only APIs; API functions are Node.js serverless, not server-side rendering. main-site is exported static HTML; workbench is client-side hydrated (uses useEffect).
+- Ensure new routes/components remain App Router compatible (use 'use client' directive only when hooks are needed).
+- Prefer consistent CTA styling with the slate/blue palette seen in Header/Footer and Workbench links.
+- If modifying navigation links, update navLinks array in [packages/ui/components/Header.tsx](packages/ui/components/Header.tsx) so all apps stay in sync.
+- Keep globals.css files aligned with shared layout padding/margins; RootLayout centers children vertically, so page components often wrap content in their own main to control spacing.
+- Image migration: Use `npm run migrate:images` to upload local images from apps/*/public/images/ to Blob Storage; images are .gitignore'd to keep them out of repo. Update URLs in Cosmos via PATCH /api/projects/{id} for dynamic image changes without rebuilds.
+- Database seeding: Use `npm run seed:cosmos` to populate Cosmos from hardcoded seed data (useful for fresh Cosmos or local dev setup).
+- API development: Handlers in apps/main-site/api/ read COSMOS_CONNECTION_STRING, AZURE_STORAGE_CONNECTION_STRING, AZURE_STORAGE_ACCOUNT_NAME from local.settings.json or SWA environment.
+- CORS allowlist: aalokdeep.com, www.aalokdeep.com, workbench.aalokdeep.com, journal.aalokdeep.com, and localhost (any port) via dynamic origin handling.
+- Auth for POST/PATCH/admin endpoints: Checks x-ms-client-principal header (injected by SWA) for ALLOWED_ADMIN_GITHUB_HANDLE=aalokpandit.
+- Data additions to Cosmos should use ISO date strings for progressLog entries to keep date formatting working. HeroImage requires { url, alt }; ProjectImage optionally includes caption and type.
+- For 404 or coming-soon flows in new apps, reuse NotFound and ComingSoon from @aalokdeep/ui to maintain consistent UX.
+- Deployment secrets and Azure Static Web App mapping are documented in [README.md](README.md); follow existing patterns when adding new apps/workflows.
+- Environment variables: COSMOS_CONNECTION_STRING, AZURE_STORAGE_CONNECTION_STRING, AZURE_STORAGE_ACCOUNT_NAME, NEXT_PUBLIC_HEADSHOT_URL (main-site), NEXT_PUBLIC_API_BASE (workbench/journal, defaults to local Functions URL).
 
-### Image Management
-- Storage: Azure Blob (`aalokdeepassets`), containers: `main-site`, `workbench`, `journal`.
-- Codebase: `.gitignore` excludes `apps/*/public/images/` and `packages/assets/public/images/` to decouple images.
-- Migration: Use `npm run migrate:images` to upload local images to Blob Storage.
-- URLs: Set `NEXT_PUBLIC_HEADSHOT_URL` and blob container URLs via SWA environment.
+## Maintenance & Scaling Notes
 
-### Admin & Auth
-- POST/PATCH projects: Require `x-ms-client-principal` header with `aalokpandit` GitHub handle (set by SWA).
-- Image upload tokens: `POST /api/projects/{id}/upload-image-token` returns `{ sasUrl, blobUrl }` for 1h SAS uploads.
-
-### Testing & Validation
-- No unit tests; validation via `npm run lint` + `npm run build` per app.
-- Run pre-push checks locally: `npm run build` for main-site, `npm run build:workbench`, `npm run build:journal`.
-- Husky pre-commit: Automatically lints/builds affected workspaces based on staged file paths.
-
-### Deployment & Routing
-- SWA static config: Catch-all route with `statusCode: 404` serves custom 404.html.
-- Redirects: `/projects` → `/` (workbench), `/posts` → `/` (journal) via `next.config.mjs`.
-- Path filters: Workflows trigger only on app + shared package changes; main-site also includes assets.
-
-### Common Tasks
-
-**Add a new project field:**
-1. Update `Project` interface in [packages/types/index.ts](packages/types/index.ts).
-2. Update API handlers in `apps/main-site/api/` to include/return the field.
-3. Update Cosmos seed data in [scripts/seed-cosmos.js](scripts/seed-cosmos.js).
-4. Update Workbench UI to display if needed.
-
-**Add a new blog feature:**
-1. Update `Blog` interface in [packages/types/index.ts](packages/types/index.ts).
-2. Update API `GET /api/blogs/{id}` to return the field.
-3. Update Journal UI to render the field.
-4. Update seed data.
-
-**Change hero image size/layout:**
-- Modify the hero container className in component (e.g., `w-full sm:w-1/2 mx-auto aspect-square`).
-- Changes apply to both workbench and journal if using consistent classes.
-
-**Update CORS allowlist:**
-- Edit `ALLOWED_ORIGINS` in [apps/main-site/api/shared/httpHelpers.js](apps/main-site/api/shared/httpHelpers.js).
-- Redeploy main-site API Functions.
-
-## See Also
-- Full architecture details: [architecture.md](../../architecture.md)
-- API endpoints & data models: [packages/types/index.ts](packages/types/index.ts)
-- Local dev setup: [README.md](../../README.md)
+- Cosmos DB: Currently using 1000 RU/s provisioned throughput on free tier. Aggressive caching (1h) on GET endpoints reduces request volume. Monitor RU/s usage if scaling beyond 2-3 projects.
+- Functions: Deployed via SWA (Standard tier required for Functions support beyond 12.5MB build limit). Cold starts may add 5-10s latency on Consumption plan; consider Premium if needed.
+- Blob Storage: Public read access on containers; SAS tokens required for writes. CORS configured for localhost + production domains.
+- Next.js exports: main-site exports static HTML to out/; workbench is dynamic (no export setting). Both use unoptimized images for Blob Storage compatibility.
+- Git: .gitignore excludes apps/*/public/images/ and packages/assets/public/images/ to decouple images from codebase. Use migrate:images script for Blob uploads.
 

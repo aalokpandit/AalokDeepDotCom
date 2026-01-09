@@ -1,7 +1,18 @@
 /**
- * HTTP response helpers and CORS configuration
+ * HTTP response helpers and CORS configuration.
+ *
+ * Provides a small set of utilities for Azure Functions HTTP handlers:
+ *  - getCorsHeaders: builds permissive CORS headers for allowed origins (including localhost)
+ *  - getCacheHeaders: shared cache headers for GET responses (1 hour)
+ *  - successResponse / errorResponse: consistent JSON envelopes
+ *  - optionsResponse: preflight handler for CORS
  */
 
+/**
+ * Allowed CORS origins for browser calls.
+ *
+ * Note: Any localhost port is allowed dynamically by `getCorsHeaders` to simplify local dev.
+ */
 const ALLOWED_ORIGINS = [
   'https://aalokdeep.com',
   'https://www.aalokdeep.com',
@@ -12,8 +23,14 @@ const ALLOWED_ORIGINS = [
 ];
 
 /**
- * Gets CORS headers for the request origin
- * @param {import('@azure/functions').HttpRequest} request
+ * Builds CORS headers for the request origin.
+ *
+ * For localhost, echoes the exact origin (any port). For production domains, restricts to
+ * the values in `ALLOWED_ORIGINS`. Always returns a consistent set of allowed methods/headers
+ * and a 1-day preflight cache.
+ *
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request
+ * @returns {Record<string, string>} CORS header map
  */
 function getCorsHeaders(request) {
   const origin = request.headers.get('origin') || '';
@@ -40,7 +57,9 @@ function getCorsHeaders(request) {
 }
 
 /**
- * Gets cache headers for GET requests (1 hour)
+ * Returns cache headers for cacheable GET responses (1 hour).
+ *
+ * @returns {Record<string, string>} Cache header map
  */
 function getCacheHeaders() {
   return {
@@ -50,10 +69,13 @@ function getCacheHeaders() {
 }
 
 /**
- * Creates a standardized success response
- * @param {any} data
- * @param {import('@azure/functions').HttpRequest} request
- * @param {boolean} cached - Whether to add cache headers
+ * Creates a standardized 200 JSON success response.
+ *
+ * @template T
+ * @param {T} data - Response payload to include in `{ success: true, data }`
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request
+ * @param {boolean} [cached=false] - Whether to attach shared cache headers
+ * @returns {{ status: number, headers: Record<string,string>, jsonBody: { success: true, data: T } }}
  */
 function successResponse(data, request, cached = false) {
   const headers = {
@@ -76,11 +98,13 @@ function successResponse(data, request, cached = false) {
 }
 
 /**
- * Creates a standardized error response
- * @param {string} code
- * @param {string} message
- * @param {number} status
- * @param {import('@azure/functions').HttpRequest} request
+ * Creates a standardized JSON error response.
+ *
+ * @param {string} code - Machine-readable error code
+ * @param {string} message - Human-readable error message
+ * @param {number} status - HTTP status code (e.g., 400, 404, 500)
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request
+ * @returns {{ status: number, headers: Record<string,string>, jsonBody: { success: false, error: { code: string, message: string }}}}
  */
 function errorResponse(code, message, status, request) {
   return {
@@ -100,8 +124,10 @@ function errorResponse(code, message, status, request) {
 }
 
 /**
- * Handles OPTIONS preflight requests
- * @param {import('@azure/functions').HttpRequest} request
+ * Handles OPTIONS preflight requests for CORS.
+ *
+ * @param {import('@azure/functions').HttpRequest} request - Incoming HTTP request
+ * @returns {{ status: number, headers: Record<string,string> }} 204 response with CORS headers
  */
 function optionsResponse(request) {
   return {

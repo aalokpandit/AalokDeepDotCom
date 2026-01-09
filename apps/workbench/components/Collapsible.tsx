@@ -9,6 +9,15 @@ interface CollapsibleProps {
   defaultOpen?: boolean;
 }
 
+/**
+ * Collapsible section component with animated expand/collapse
+ * Used for project detail sections (About, Progress Log, Links)
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.title - Section heading text
+ * @param {React.ReactNode} props.children - Content to show when expanded
+ * @param {boolean} [props.defaultOpen=false] - Initial expanded state
+ */
 export default function Collapsible({
   title,
   children,
