@@ -8,6 +8,7 @@ on:
       - 'apps/main-site/**'
       - 'packages/ui/**'
       - 'packages/assets/**'
+      - 'packages/types/**'
       - '.github/workflows/azure-static-web-apps-main-site.yml'
   pull_request:
     types: [opened, synchronize, reopened, closed]
@@ -17,6 +18,7 @@ on:
       - 'apps/main-site/**'
       - 'packages/ui/**'
       - 'packages/assets/**'
+      - 'packages/types/**'
 
 jobs:
   build_and_deploy_job:

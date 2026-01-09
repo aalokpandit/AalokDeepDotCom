@@ -133,3 +133,30 @@ export interface CosmosDocument {
   _ts?: number;
   _etag?: string;
 }
+
+/**
+ * Blog post metadata for journal app
+ */
+export interface Blog {
+  id: string; // Cosmos document id
+  title: string;
+  summary: string; // Short summary for listing
+  body: string; // Markdown content
+  tags: string[];
+  createdAt: string; // ISO date string
+  heroImage?: HeroImage; // Optional hero image with alt text
+}
+
+/**
+ * Blog list item projection (landing page)
+ */
+export type BlogListItem = Pick<
+  Blog,
+  'id' | 'title' | 'summary' | 'tags' | 'createdAt' | 'heroImage'
+>;
+
+/**
+ * API envelopes for blog endpoints
+ */
+export type BlogListResponse = ApiResponse<BlogListItem[]>;
+export type BlogDetailResponse = ApiResponse<Blog>;
