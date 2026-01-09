@@ -6,6 +6,7 @@ const ALLOWED_ORIGINS = [
   'https://aalokdeep.com',
   'https://www.aalokdeep.com',
   'https://workbench.aalokdeep.com',
+  'https://journal.aalokdeep.com',
   'http://localhost:3000', // Local development
   'http://localhost:4280', // SWA CLI
 ];
