@@ -24,6 +24,14 @@ export function Header() {
           </a>
 
           <div className="hidden md:flex items-center gap-6 text-sm text-slate-600">
+            <a
+              href="https://aalokdeep.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            >
+              Home
+            </a>
             <span aria-hidden className="text-slate-300">|</span>
             {navMain.map(({ href, label, external }) => 
               external ? (
