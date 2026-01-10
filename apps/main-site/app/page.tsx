@@ -58,7 +58,7 @@ export default function Home() {
             description="Project portfolio, code experiments & build logs."
           />
           <HubLink
-            href="/coming-soon?feature=The+Journal"
+            href="https://journal.aalokdeep.com"
             icon="✍️"
             title="The Journal"
             description="Reflections on product, philosophy, and learning."
