@@ -10,6 +10,7 @@ export async function generateStaticParams() {
   const fallbackIds = [
     { id: 'personal-website' },
     { id: 'classic-memory-game' },
+    { id: 'holiday-ornament' },
   ];
 
   try {
