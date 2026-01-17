@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Aalok Deep Pandit",
   description: "Technologist and lifelong learner based in Los Angeles. Digital garden for experiments, insights on technology, and photography.",
   icons: {
-    icon: "/images/favicon.png",
+    icon: "https://aalokdeepassets.blob.core.windows.net/main-site/favicon.png",
   },
 };
 
