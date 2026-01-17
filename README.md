@@ -7,7 +7,8 @@ This monorepo contains the source code for the personal website and all related 
 ## Live Sites
 
 - **Main Site**: [aalokdeep.com](https://aalokdeep.com)
-- **Workbench**: [workbench.aalokdeep.com](https://workbench.aalokdeep.com) - Project portfolio and showcase
+- **Workbench**: [workbench.aalokdeep.com](https://workbench.aalokdeep.com) - Dynamic project portfolio
+- **Journal**: [journal.aalokdeep.com](https://journal.aalokdeep.com) - Blog with essays and reflections
 
 ## Project Structure
 
@@ -126,9 +127,9 @@ As of January 2026, this monorepo has been rearchitected into a **3-tier dynamic
 - **SAS Tokens**: Generated via `POST /api/projects/{id}/upload-image-token` for secure uploads
 
 ### UI Tier: Next.js (Dynamic)
-- **workbench app**: Removed `output: 'export'`; now fetches projects dynamically at runtime
-- **main-site app**: Headshot uses `NEXT_PUBLIC_HEADSHOT_URL` env var (falls back to `/public/images/` locally)
-- **Images**: Configure blob URLs in SWA environment settings; local dev uses fallback paths
+- **main-site app**: Static export to `out/`; static HTML with embedded Functions. Uses `NEXT_PUBLIC_HEADSHOT_URL` env var for headshot image.
+- **workbench app**: Removed `output: 'export'`; fully dynamic. Client components with `useParams()` fetch projects at runtime via `/api/projects/{id}`.
+- **journal app**: Removed `output: 'export'`; fully dynamic. Client components fetch blogs at runtime via `/api/blogs/{id}`. Landing page supports tag-based filtering with OR logic.
 
 ## Core Concepts
 
@@ -154,27 +155,27 @@ Images are now stored in Azure Blob Storage and decoupled from the codebase:
 
 All scripts should be run from the **root** of the repository.
 
-| App | Domain | Workflow | Azure Token Secret |
-|-----|--------|----------|-------------------|
-| main-site | aalokdeep.com | `azure-static-web-apps-main-site.yml` | `AZURE_STATIC_WEB_APPS_API_TOKEN_MAIN_SITE` |
-| workbench | workbench.aalokdeep.com | `azure-static-web-apps-workbench.yml` | `AZURE_STATIC_WEB_APPS_API_TOKEN_WORKBENCH` |
+| App | Domain | Workflow | Azure Token Secret | Output Type |
+|-----|--------|----------|-------------------|-------------|
+| main-site | aalokdeep.com | `azure-static-web-apps-main-site.yml` | `AZURE_STATIC_WEB_APPS_API_TOKEN_MAIN_SITE` | Static (`out/`) |
+| workbench | workbench.aalokdeep.com | `azure-static-web-apps-workbench.yml` | `AZURE_STATIC_WEB_APPS_API_TOKEN_WORKBENCH` | Dynamic (no export) |
+| journal | journal.aalokdeep.com | `azure-static-web-apps-journal.yml` | `AZURE_STATIC_WEB_APPS_API_TOKEN_JOURNAL` | Dynamic (no export) |
 
 ### How It Works
 
 1. **Path Filtering**: Each workflow only triggers on changes to its app or shared packages
-2. **Independent Builds**: GitHub Actions builds the specific app when triggered
-3. **Static Export**: Next.js apps use `output: 'export'` to generate static HTML
-4. **Deployment**: The build output is uploaded to the respective Azure Static Web App
+2. **Selective Builds**: GitHub Actions builds only the affected app
+3. **Deployment**: 
+   - **main-site**: Static export to `out/` → SWA
+   - **workbench & journal**: Dynamic Next.js apps with client-side routing → SWA handles runtime rendering
 
 ### Path Filters
 
 Workflows trigger on changes to:
 - App-specific files: `apps/[app-name]/**`
 - Shared UI components: `packages/ui/**`
-- Shared assets: `packages/assets/**`
+- Shared types: `packages/types/**`
 - Workflow file itself: `.github/workflows/[workflow-name].yml`
-
-This ensures efficient CI/CD - only affected apps are rebuilt and deploy
 ```js
 // in apps/main-site/tailwind.config.ts
 const config = {
@@ -220,11 +221,12 @@ The GitHub Actions workflows in `.github/workflows/` are configured to trigger d
 
 ## Technology Stack
 
--   **Framework**: Next.js 14 (App Router)
+-   **Framework**: Next.js 14 (App Router, dynamic routing for workbench/journal)
 -   **Language**: TypeScript
 -   **Styling**: Tailwind CSS
--   **Deployment**: Azure Static Web Apps
--   **CI/CD**: GitHub Actions
+-   **Database**: Azure Cosmos DB (NoSQL)
+-   **Deployment**: Azure Static Web Apps with Azure Functions
+-   **CI/CD**: GitHub Actions with path-based filtering
 -   **Package Manager**: npm Workspaces
 
 ## Available Scripts
