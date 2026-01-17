@@ -9,7 +9,7 @@ export const metadata = {
 export default function ResumePage() {
   return (
     <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
-      <ComingSoon homePath="/" />
+      <ComingSoon homePath="https://aalokdeep.com" />
     </Suspense>
   );
 }
