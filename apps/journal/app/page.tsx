@@ -50,14 +50,16 @@ export default function JournalHome() {
 
   return (
     <main className="bg-[#FDFBF7]">
-      <div className="mx-auto max-w-5xl px-4 py-12 text-slate-800 md:py-16">
+      <div className="mx-auto max-w-6xl px-4 py-12 text-slate-800 md:py-16">
         <header className="mb-12 space-y-4">
-          <p className="text-sm uppercase tracking-wide text-slate-500">Journal</p>
           <h1 className="text-4xl font-bold text-slate-900 md:text-5xl">
-            Stories, retrospectives, and build notes
+            The Journal
           </h1>
           <p className="max-w-3xl text-lg text-slate-700">
-            Thoughtful updates from the build journey. Browse titles and summaries, then dive into full posts.
+            Welcome to the journal. This is a collection of essays, reflections, and long‑form thoughts
+             that trace the ideas behind my work and life. Each entry captures a moment of curiosity, a
+              question I’m exploring, or a story worth sitting with. Browse the posts below to dive into
+               the thinking, context, and narratives that shape my projects and perspectives.
           </p>
         </header>
 

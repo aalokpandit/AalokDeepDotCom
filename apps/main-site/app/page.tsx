@@ -55,19 +55,19 @@ export default function Home() {
             href="https://workbench.aalokdeep.com"
             icon="🛠️"
             title="The Workbench"
-            description="Project portfolio, code experiments & build logs."
+            description="Things I'm making."
           />
           <HubLink
             href="https://journal.aalokdeep.com"
             icon="✍️"
             title="The Journal"
-            description="Reflections on product, philosophy, and learning."
+            description="Things I'm thinking."
           />
           <HubLink
             href="/coming-soon?feature=The+Gallery"
             icon="📷"
             title="The Gallery"
-            description="Visual stories and photography from LA & beyond."
+            description="Things I'm seeing."
           />
         </div>
       </div>

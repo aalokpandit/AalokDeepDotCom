@@ -2,7 +2,13 @@
   "navigationFallback": {
     "rewrite": "/404.html"
   },
-  "routes": [],
+  "routes": [
+    {
+      "route": "/*",
+      "allowedRoles": ["anonymous", "authenticated"],
+      "statusCode": 404
+    }
+  ],
   "build": {
     "appLocation": ".",
     "appBuildCommand": "echo 'Pre-built output in out/ directory'",
