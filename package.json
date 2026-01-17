@@ -4,10 +4,13 @@
   "scripts": {
     "dev": "npm run dev --workspace=main-site",
     "dev:workbench": "npm run dev --workspace=workbench",
+    "dev:journal": "npm run dev --workspace=journal",
     "build": "npm run build --workspace=main-site",
     "build:workbench": "npm run build --workspace=workbench",
+    "build:journal": "npm run build --workspace=journal",
     "start": "npm run start --workspace=main-site",
     "start:workbench": "npm run start --workspace=workbench",
+    "start:journal": "npm run start --workspace=journal",
     "lint": "npm run lint --workspace=main-site",
     "lint:workbench": "npm run lint --workspace=workbench",
     "lint:journal": "npm run lint --workspace=journal",
