@@ -1,9 +1,11 @@
+'use client';
+
+import { useParams } from 'next/navigation';
 import ProjectDetailClient from './ProjectDetailClient';
 
-interface ProjectDetailPageProps {
-  params: { id: string };
-}
+export default function ProjectDetailPage() {
+  const params = useParams();
+  const projectId = params?.id as string;
 
-export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  return <ProjectDetailClient projectId={params.id} />;
+  return <ProjectDetailClient projectId={projectId} />;
 }
