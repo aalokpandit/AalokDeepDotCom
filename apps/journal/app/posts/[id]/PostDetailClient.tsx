@@ -7,6 +7,16 @@ import { ArrowLeft } from 'lucide-react';
 import type { Blog } from '@aalokdeep/types';
 import { getBlogById } from '@/lib/blogs';
 
+function formatPostDate(dateStr: string) {
+  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+  const d = isDateOnly ? new Date(`${dateStr}T00:00:00`) : new Date(dateStr);
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
 interface PostDetailClientProps {
   postId: string;
 }
@@ -80,26 +90,23 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
         <article className="space-y-6">
           <header className="space-y-2">
             <p className="text-sm uppercase tracking-wide text-slate-500">
-              {new Date(post.createdAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+              {formatPostDate(post.createdAt)}
             </p>
             <h1 className="text-4xl font-bold text-slate-900">{post.title}</h1>
             <p className="text-lg text-slate-700">{post.summary}</p>
           </header>
 
           {hasHero && (
-            <div className="overflow-hidden rounded-xl bg-slate-100" style={{ maxWidth: '720px' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={post.heroImage?.url}
-                alt={heroAlt}
-                className="w-full object-cover"
-                style={{ aspectRatio: '1 / 1' }}
-                onError={() => setShowImage(false)}
-              />
+            <div className="mx-auto w-full sm:w-1/2">
+              <div className="overflow-hidden rounded-xl bg-slate-100 aspect-square">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={post.heroImage?.url}
+                  alt={heroAlt}
+                  className="w-full h-full object-cover"
+                  onError={() => setShowImage(false)}
+                />
+              </div>
             </div>
           )}
 
