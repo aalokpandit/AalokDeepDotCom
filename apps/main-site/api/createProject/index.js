@@ -69,6 +69,7 @@ app.http('createProject', {
         progressLog: projectData.progressLog || [],
         links: projectData.links || [],
         detailImages: projectData.detailImages || [],
+        futureConsiderations: projectData.futureConsiderations || [],
       };
 
       const { resource: createdProject } = await container.items.create(newProject);
