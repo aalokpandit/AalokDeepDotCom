@@ -5,14 +5,13 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 interface ComingSoonProps {
-  /** The path to return to, e.g., "/" or "https://aalokdeep.com" */
+  /** The path to return to, e.g., "/" or "/blog" */
   homePath: string;
 }
 
 export function ComingSoon({ homePath }: ComingSoonProps) {
   const searchParams = useSearchParams();
   const featureName = searchParams.get('feature');
-  const isAbsoluteUrl = homePath.startsWith('http');
 
   return (
     <section className="min-h-[60vh] flex items-center justify-center text-center p-6">
@@ -33,21 +32,12 @@ export function ComingSoon({ homePath }: ComingSoonProps) {
           Please check back soon to see what&apos;s new. We appreciate your patience!
         </p>
 
-        {isAbsoluteUrl ? (
-          <a
-            href={homePath}
-            className="inline-block px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors duration-300"
-          >
-            Return to Home
-          </a>
-        ) : (
-          <Link
-            href={homePath}
-            className="inline-block px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors duration-300"
-          >
-            Return to Home
-          </Link>
-        )}
+        <Link
+          href={homePath}
+          className="inline-block px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors duration-300"
+        >
+          Return to Home
+        </Link>
       </div>
     </section>
   );

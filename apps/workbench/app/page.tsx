@@ -43,7 +43,7 @@ export default function WorkbenchHome() {
         {/* Header Section */}
         <section className="mb-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
-            The Workbench
+            Workbench
           </h1>
           <p className="text-lg md:text-xl text-slate-700 max-w-3xl leading-relaxed">
             Welcome to my workbench. This is a curated collection of projects, experiments, and

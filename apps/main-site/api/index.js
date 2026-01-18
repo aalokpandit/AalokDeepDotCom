@@ -9,7 +9,5 @@ const { app } = require('@azure/functions');
 require('./projects');
 require('./uploadImageToken');
 require('./health');
-require('./getBlogs');
-require('./getBlogById');
 
 module.exports = app;

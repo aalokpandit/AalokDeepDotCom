@@ -33,10 +33,8 @@ if (!CONNECTION_STRING) {
   process.exit(1);
 }
 
-const WORKBENCH_DATABASE_ID = 'workbench-content';
+const DATABASE_ID = 'workbench-content';
 const PROJECTS_CONTAINER_ID = 'projects';
-const JOURNAL_DATABASE_ID = 'journal-content';
-const BLOGS_CONTAINER_ID = 'blogs';
 
 /**
  * Project data migrated from apps/workbench/lib/projects.ts
@@ -143,105 +141,40 @@ const projectsData = [
   },
 ];
 
-const blogsData = [
-  {
-    id: 'welcome-to-the-journal',
-    title: 'Welcome to the Journal',
-    summary: 'Why I am building a dedicated journal alongside the workbench, and what to expect from upcoming posts.',
-    body: `# Welcome to the Journal
-
-This space will house longer-form writing about the build journey, design choices, and lessons learned. Expect:
-
-- Architecture notes and trade-offs
-- Ship logs for new features
-- Occasional deep dives into tools that worked (and those that did not)
-
-Thanks for reading and following along!`,
-    tags: ['updates', 'roadmap'],
-    createdAt: '2025-01-08',
-    heroImage: {
-      url: 'https://aalokdeepassets.blob.core.windows.net/journal/welcome-cover.png',
-      alt: 'Soft gradient background with journal title',
-    },
-  },
-  {
-    id: 'workbench-retrospective',
-    title: 'Workbench Retrospective',
-    summary: 'A short retrospective on shipping the workbench app, covering what went well and what will change for the journal.',
-    body: `# Workbench Retrospective
-
-Building the workbench clarified a few things:
-
-1. Shared UI components saved time—Header, Footer, and RootLayout carry over here.
-2. Static export plus dynamic data via Functions kept deployments lean.
-3. Image handling with Blob Storage worked smoothly; we will reuse it for hero images.
-
-Next up, the journal will prioritize readability: summaries on the landing page, Markdown for content, and simple tag filters.`,
-    tags: ['retrospective', 'architecture'],
-    createdAt: '2025-01-07',
-  },
-];
-
-async function ensureDatabase(client, id) {
-  console.log(`📦 Creating database "${id}"...`);
-  const { database } = await client.databases.createIfNotExists({ id });
-  console.log(`✓ Database "${id}" ready\n`);
-  return database;
-}
-
-async function ensureContainer(database, id) {
-  console.log(`📦 Creating container "${id}"...`);
-  const { container } = await database.containers.createIfNotExists({
-    id,
-    partitionKey: { paths: ['/id'] },
-  });
-  console.log(`✓ Container "${id}" ready\n`);
-  return container;
-}
-
-async function seedItems(container, items, label, skipIfExists = false) {
-  console.log(`📝 Seeding ${items.length} ${label}...`);
-  for (const item of items) {
-    try {
-      // If skipIfExists is true, check if item already exists before seeding
-      if (skipIfExists) {
-        try {
-          await container.item(item.id).read();
-          console.log(`  ⊘ Skipped: ${item.title || item.id} (already exists)`);
-          continue;
-        } catch (err) {
-          // Item doesn't exist, proceed with seeding
-          if (err.code !== 404) throw err;
-        }
-      }
-      await container.items.upsert(item);
-      console.log(`  ✓ Seeded: ${item.title || item.id}`);
-    } catch (error) {
-      console.error(`  ✗ Failed to seed ${item.title || item.id}:`, error.message);
-    }
-  }
-}
-
 async function seedCosmos() {
   const client = new CosmosClient({ connectionString: CONNECTION_STRING });
 
   try {
     console.log('🌱 Starting Cosmos DB seeding...\n');
 
-    // Workbench database + container (skip seeding if projects already exist)
-    const workbenchDb = await ensureDatabase(client, WORKBENCH_DATABASE_ID);
-    const projectsContainer = await ensureContainer(workbenchDb, PROJECTS_CONTAINER_ID);
-    await seedItems(projectsContainer, projectsData, 'projects', true);
+    // Create or get database
+    console.log(`📦 Creating database "${DATABASE_ID}"...`);
+    const { database } = await client.databases.createIfNotExists({ id: DATABASE_ID });
+    console.log(`✓ Database "${DATABASE_ID}" ready\n`);
 
-    // Journal database + container (skip seeding if blogs already exist)
-    const journalDb = await ensureDatabase(client, JOURNAL_DATABASE_ID);
-    const blogsContainer = await ensureContainer(journalDb, BLOGS_CONTAINER_ID);
-    await seedItems(blogsContainer, blogsData, 'blogs', true);
+    // Create or get projects container
+    console.log(`📦 Creating container "${PROJECTS_CONTAINER_ID}"...`);
+    const { container: projectsContainer } = await database.containers.createIfNotExists({
+      id: PROJECTS_CONTAINER_ID,
+      partitionKey: { paths: ['/id'] },
+    });
+    console.log(`✓ Container "${PROJECTS_CONTAINER_ID}" ready\n`);
+
+    // Seed project data
+    console.log(`📝 Seeding ${projectsData.length} projects...`);
+    for (const project of projectsData) {
+      try {
+        await projectsContainer.items.upsert(project);
+        console.log(`  ✓ Seeded: ${project.title}`);
+      } catch (error) {
+        console.error(`  ✗ Failed to seed ${project.title}:`, error.message);
+      }
+    }
 
     console.log('\n✅ Cosmos DB seeding complete!');
-    console.log(`📊 Databases: ${WORKBENCH_DATABASE_ID}, ${JOURNAL_DATABASE_ID}`);
-    console.log(`📊 Containers: ${PROJECTS_CONTAINER_ID}, ${BLOGS_CONTAINER_ID}`);
-    console.log(`📊 Documents seeded: ${projectsData.length + blogsData.length}`);
+    console.log(`📊 Database: ${DATABASE_ID}`);
+    console.log(`📊 Containers: ${PROJECTS_CONTAINER_ID}`);
+    console.log(`📊 Documents seeded: ${projectsData.length}`);
   } catch (error) {
     console.error('❌ Seeding failed:', error.message);
     console.error('\nTroubleshooting:');
