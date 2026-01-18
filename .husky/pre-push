@@ -3,7 +3,16 @@
 
 echo "🔍 Running pre-push verification..."
 
-# Use smart husky-checks.js to detect which apps need building
-node scripts/husky-checks.js
+# Ensure dependencies are up to date (runs on every push; use --no-verify to skip if confident)
+npm ci || exit 1
+
+# Build main-site (skip ESLint for speed; lint runs in CI)
+npx cross-env NEXT_DISABLE_ESLINT=1 npm run build --workspace=main-site || exit 1
+
+# Ensure API dependencies are installable
+( cd apps/main-site/api && npm ci ) || exit 1
+
+# Build workbench against production API base (skip ESLint for speed)
+npx cross-env NEXT_DISABLE_ESLINT=1 NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench || exit 1
 
 echo "✅ Pre-push checks passed. Proceeding with push."
