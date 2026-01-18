@@ -47,12 +47,12 @@ function main() {
 
     if (workbenchTouched) {
       run('npm run lint:workbench');
-      run('npx cross-env NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench');
+      run('NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench');
     }
 
     if (journalTouched) {
       run('npm run lint:journal');
-      run('npx cross-env NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:journal');
+      run('NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:journal');
     }
   } catch (error) {
     console.error('\nHusky checks failed.');

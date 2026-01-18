@@ -28,7 +28,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "devDependencies": {
     "@azure/cosmos": "^4.1.1",
