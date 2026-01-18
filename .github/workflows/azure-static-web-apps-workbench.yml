@@ -49,8 +49,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "apps/workbench"
-          output_location: ".next"
-          app_build_command: "npm run build:workbench"
           skip_app_build: false
 
   close_pull_request_job:
