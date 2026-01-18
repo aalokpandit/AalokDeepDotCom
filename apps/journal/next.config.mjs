@@ -1,9 +1,8 @@
 /**
- * Next.js config for workbench app.
+ * Next.js config for journal app.
  * - Dynamic routing via client components and Azure SWA routing
- * - Client-side useEffect calls fetch APIs dynamically for project data
  * - images.unoptimized allows next/image without optimization
- * - remotePatterns allows Azure Blob Storage URLs
+ * - remotePatterns allows Azure Blob Storage URLs for hero images
  */
 const nextConfig = {
   images: {
@@ -18,9 +17,9 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/projects',
+        source: '/posts',
         destination: '/',
-        permanent: true, // 301 redirect
+        permanent: true,
       },
     ];
   },

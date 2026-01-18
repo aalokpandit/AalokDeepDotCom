@@ -1,0 +1,68 @@
+name: CI Checks (Selective)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Detect changed apps
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            main:
+              - 'apps/main-site/**'
+              - 'packages/ui/**'
+              - 'packages/types/**'
+              - 'packages/assets/**'
+            workbench:
+              - 'apps/workbench/**'
+              - 'packages/ui/**'
+              - 'packages/types/**'
+            journal:
+              - 'apps/journal/**'
+              - 'packages/ui/**'
+              - 'packages/types/**'
+
+      - name: Lint main-site
+        if: steps.changes.outputs.main == 'true'
+        run: npm run lint
+
+      - name: Build main-site
+        if: steps.changes.outputs.main == 'true'
+        run: npm run build
+
+      - name: Lint workbench
+        if: steps.changes.outputs.workbench == 'true'
+        run: npm run lint:workbench
+
+      - name: Build workbench
+        if: steps.changes.outputs.workbench == 'true'
+        env:
+          NEXT_PUBLIC_API_BASE: https://aalokdeep.com
+        run: npm run build:workbench
+
+      - name: Lint journal
+        if: steps.changes.outputs.journal == 'true'
+        run: npm run lint:journal
+
+      - name: Build journal
+        if: steps.changes.outputs.journal == 'true'
+        env:
+          NEXT_PUBLIC_API_BASE: https://aalokdeep.com
+        run: npm run build:journal

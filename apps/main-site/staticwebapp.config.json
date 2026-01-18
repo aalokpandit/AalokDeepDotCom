@@ -1,4 +1,4 @@
-{
+﻿{
   "navigationFallback": {
     "rewrite": "/404.html"
   },
@@ -17,6 +17,11 @@
       "route": "/api/projects/*/upload-image-token",
       "methods": ["POST"],
       "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["anonymous", "authenticated"],
+      "statusCode": 404
     }
   ],
   "build": {
