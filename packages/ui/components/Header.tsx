@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-const navLinks = [
-  { href: 'https://aalokdeep.com', label: 'Home', external: true },
+const navMain = [
   { href: 'https://workbench.aalokdeep.com', label: 'Workbench', external: true },
-  { href: '/coming-soon?feature=The+Journal', label: 'Journal' },
+  { href: 'https://journal.aalokdeep.com', label: 'Journal', external: true },
   { href: '/coming-soon?feature=The+Gallery', label: 'Gallery' },
+  { href: 'https://aalokdeep.com/resume', label: 'Resume', external: true },
 ];
+
+const memoryLink = { href: 'https://memorygame.aalokdeep.com', label: 'Memory Game' };
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -22,7 +24,16 @@ export function Header() {
           </a>
 
           <div className="hidden md:flex items-center gap-6 text-sm text-slate-600">
-            {navLinks.map(({ href, label, external }) => 
+            <a
+              href="https://aalokdeep.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            >
+              Home
+            </a>
+            <span aria-hidden className="text-slate-300">|</span>
+            {navMain.map(({ href, label, external }) => 
               external ? (
                 <a
                   key={href}
@@ -43,6 +54,13 @@ export function Header() {
                 </Link>
               )
             )}
+            <span aria-hidden className="text-slate-300">|</span>
+            <Link
+              href={memoryLink.href}
+              className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            >
+              {memoryLink.label}
+            </Link>
           </div>
 
           <button
@@ -64,7 +82,16 @@ export function Header() {
 
         {open && (
           <div className="md:hidden pb-4 space-y-2 text-sm text-slate-600">
-            {navLinks.map(({ href, label, external }) =>
+            {/* Mobile menu lists all, including Home */}
+            <a
+              href="https://aalokdeep.com"
+              target="_blank"
+              rel="noreferrer"
+              className="block px-2 py-2 rounded-md hover:bg-slate-100 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            >
+              Home
+            </a>
+            {navMain.map(({ href, label, external }) =>
               external ? (
                 <a
                   key={href}
@@ -86,6 +113,13 @@ export function Header() {
                 </Link>
               )
             )}
+            <Link
+              href={memoryLink.href}
+              className="block px-2 py-2 rounded-md hover:bg-slate-100 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              onClick={() => setOpen(false)}
+            >
+              {memoryLink.label}
+            </Link>
           </div>
         )}
       </nav>
