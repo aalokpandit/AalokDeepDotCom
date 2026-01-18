@@ -22,9 +22,9 @@ interface ProjectCardProps {
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link href={`/projects/${project.id}`}>
-      <div className="group h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border border-slate-200">
+      <div className="group h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border border-slate-200 min-h-[300px]">
         {/* Image Container */}
-        <div className="relative h-48 bg-slate-200 overflow-hidden">
+        <div className="relative aspect-square w-full bg-slate-200 overflow-hidden">
           <Image
             src={project.heroImage.url}
             alt={project.heroImage.alt}
