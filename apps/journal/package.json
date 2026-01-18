@@ -7,6 +7,7 @@
     "prebuild": "node ../../scripts/copy-assets.js",
     "dev": "next dev",
     "build": "next build",
+    "build:journal": "npm run build",
     "start": "next start",
     "lint": "next lint"
   },
