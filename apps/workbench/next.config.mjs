@@ -6,7 +6,6 @@
  * - remotePatterns allows Azure Blob Storage URLs
  */
 const nextConfig = {
-  output: 'export',
   images: {
     unoptimized: true,
     remotePatterns: [
