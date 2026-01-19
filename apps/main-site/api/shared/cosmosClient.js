@@ -14,10 +14,13 @@ const { CosmosClient } = require('@azure/cosmos');
 let cosmosClient = null;
 let database = null;
 let projectsContainer = null;
+let blogsContainer = null;
 
 const CONNECTION_STRING = process.env.COSMOS_CONNECTION_STRING;
 const DATABASE_ID = 'workbench-content';
 const PROJECTS_CONTAINER_ID = 'projects';
+const BLOGS_DATABASE_ID = 'journal-content';
+const BLOGS_CONTAINER_ID = 'blogs';
 
 function getCosmosClient() {
   if (!CONNECTION_STRING) {
@@ -39,8 +42,18 @@ function getProjectsContainer() {
   return projectsContainer ??= getDatabase().container(PROJECTS_CONTAINER_ID);
 }
 
+/**
+ * Gets or creates the blogs container singleton from journal-content database
+ * Container stores all blog posts with /id as partition key
+ * @returns {import('@azure/cosmos').Container} Cosmos DB container for blogs
+ */
+function getBlogsContainer() {
+  return blogsContainer ??= getCosmosClient().database(BLOGS_DATABASE_ID).container(BLOGS_CONTAINER_ID);
+}
+
 module.exports = {
   getCosmosClient,
   getDatabase,
   getProjectsContainer,
+  getBlogsContainer,
 };

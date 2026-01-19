@@ -15,4 +15,7 @@ npx cross-env NEXT_DISABLE_ESLINT=1 npm run build --workspace=main-site || exit 
 # Build workbench against production API base (skip ESLint for speed)
 npx cross-env NEXT_DISABLE_ESLINT=1 NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:workbench || exit 1
 
+# Build journal against production API base (skip ESLint for speed)
+npx cross-env NEXT_DISABLE_ESLINT=1 NEXT_PUBLIC_API_BASE=https://aalokdeep.com npm run build:journal || exit 1
+
 echo "✅ Pre-push checks passed. Proceeding with push."
