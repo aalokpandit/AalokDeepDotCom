@@ -1,11 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
+import { marked } from 'marked';
+import DOMPurify from 'isomorphic-dompurify';
 import { ArrowLeft } from 'lucide-react';
 import type { Blog } from '@aalokdeep/types';
 import { getBlogById } from '@/lib/blogs';
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function stripLeadingTitle(html: string, title?: string) {
+  if (!html || !title) return html;
+  const normalized = escapeRegExp(title.trim());
+  const pattern = new RegExp(`^\s*<h[1-3][^>]*>\s*${normalized}\s*</h[1-3]>\s*`, 'i');
+  return html.replace(pattern, '');
+}
 
 function formatPostDate(dateStr: string) {
   const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
@@ -48,6 +60,14 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
 
   const heroAlt = post?.heroImage?.alt || post?.title;
   const hasHero = Boolean(post?.heroImage?.url) && showImage;
+
+  const renderedBody = useMemo(() => {
+    if (!post?.body) return '';
+    const normalized = post.body.replace(/\\n/g, '\n');
+    const html = marked.parse(normalized, { async: false, breaks: true }) as string;
+    const withoutTitle = stripLeadingTitle(html, post.title);
+    return DOMPurify.sanitize(withoutTitle);
+  }, [post?.body, post?.title]);
 
   const header = (
     <Link
@@ -116,9 +136,10 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
             </div>
           )}
 
-          <section className="prose prose-slate max-w-none">
-            <ReactMarkdown>{post.body}</ReactMarkdown>
-          </section>
+          <section
+            className="space-y-4 leading-7 text-slate-800 [&>p]:mb-4 [&>p]:leading-7"
+            dangerouslySetInnerHTML={{ __html: renderedBody }}
+          />
 
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-4">
