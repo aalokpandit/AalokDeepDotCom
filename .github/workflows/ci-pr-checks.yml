@@ -44,3 +44,8 @@ jobs:
         env:
           NEXT_PUBLIC_API_BASE: ${{ secrets.STAGING_API_BASE || 'https://aalokdeep.com' }}
         run: npm run build:workbench
+
+      - name: Build journal (PR)
+        env:
+          NEXT_PUBLIC_API_BASE: ${{ secrets.STAGING_API_BASE || 'https://aalokdeep.com' }}
+        run: npm run build:journal
