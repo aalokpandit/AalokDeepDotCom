@@ -1,11 +1,11 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useParams } from 'next/navigation';
-import PostDetailClient from './PostDetailClient';
+interface PostDetailRedirectProps {
+  params: {
+    id: string;
+  };
+}
 
-export default function PostDetailPage() {
-  const params = useParams();
-  const postId = params?.id as string;
-
-  return <PostDetailClient postId={postId} />;
+export default function PostDetailRedirect({ params }: PostDetailRedirectProps) {
+  redirect(`/blogs/${params.id}`);
 }
