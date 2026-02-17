@@ -107,21 +107,21 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
   }
 
   return (
-    <main className="bg-[#FDFBF7]">
-      <div className="max-w-4xl mx-auto px-4 py-12 text-slate-800">
+    <main className="bg-[#FDFBF7] overflow-x-hidden">
+      <div className="max-w-4xl mx-auto px-4 py-6 md:py-12 text-slate-800">
         {header}
 
-        <section className="mb-12">
+        <section className="mb-6 md:mb-12">
           <p className="text-sm uppercase tracking-wide text-slate-500 mb-2">
             {formatPostDate(post.createdAt)}
           </p>
-          <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">{post.title}</h1>
-          <p className="text-lg text-slate-700 leading-relaxed">{post.summary}</p>
+          <h1 className="text-2xl md:text-4xl font-serif font-bold text-slate-900 mb-3 md:mb-4 break-words">{post.title}</h1>
+          <p className="text-sm md:text-lg text-slate-700 leading-relaxed break-words">{post.summary}</p>
         </section>
 
         {hasHero && (
-          <div className="mb-8">
-            <div className="relative w-full sm:w-1/2 mx-auto aspect-square rounded-lg overflow-hidden border border-slate-200">
+          <div className="mb-6 md:mb-8 flex justify-center">
+            <div className="relative w-3/4 sm:w-1/2 aspect-square rounded-lg overflow-hidden border border-slate-200">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={post.heroImage?.url}
@@ -140,7 +140,7 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
         )}
 
         <section
-          className="prose prose-slate max-w-none"
+          className="prose prose-slate max-w-none prose-headings:text-xl md:prose-headings:text-2xl prose-p:text-base prose-li:text-base overflow-x-hidden break-words prose-a:break-all"
           dangerouslySetInnerHTML={{ __html: renderedBody }}
         />
 
