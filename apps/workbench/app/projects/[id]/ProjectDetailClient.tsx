@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import Collapsible from '@/components/Collapsible';
+import { SocialShare } from '@aalokdeep/ui';
 import type { Project } from '@aalokdeep/types';
 
 interface ProjectDetailClientProps {
@@ -210,6 +211,11 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
             </div>
           </Collapsible>
         )}
+
+        {/* Social Share Buttons */}
+        <SocialShare 
+          title={project.title} 
+        />
       </div>
     </main>
   );

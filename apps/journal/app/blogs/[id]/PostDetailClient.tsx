@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 import { ArrowLeft } from 'lucide-react';
+import { SocialShare } from '@aalokdeep/ui';
 import type { Blog } from '@aalokdeep/types';
 import { getBlogById } from '@/lib/blogs';
 
@@ -107,7 +108,7 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
   }
 
   return (
-    <main className="bg-[#FDFBF7] overflow-x-hidden">
+    <main className="bg-[#FDFBF7]">
       <div className="max-w-4xl mx-auto px-4 py-6 md:py-12 text-slate-800">
         {header}
 
@@ -156,6 +157,11 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
             ))}
           </div>
         )}
+
+        {/* Social Share Buttons */}
+        <SocialShare 
+          title={post.title} 
+        />
       </div>
     </main>
   );
