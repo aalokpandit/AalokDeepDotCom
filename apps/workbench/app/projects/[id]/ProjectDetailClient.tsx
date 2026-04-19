@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import Collapsible from '@/components/Collapsible';
 import { SocialShare } from '@aalokdeep/ui';
 import type { Project } from '@aalokdeep/types';
+import { getProjectById } from '@/lib/projects';
 
 interface ProjectDetailClientProps {
   projectId: string;
@@ -38,19 +39,8 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
   useEffect(() => {
     async function fetchProject() {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
-        const response = await fetch(`${apiBase}/api/projects/${projectId}`);
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            setProject(null);
-          } else {
-            throw new Error('Failed to fetch project');
-          }
-        } else {
-          const data = await response.json();
-          setProject(data.data || null);
-        }
+        const data = await getProjectById(projectId);
+        setProject(data);
       } catch (err) {
         console.error(`[ProjectDetail] Error fetching project ${projectId}:`, err);
         setError(err instanceof Error ? err.message : 'Failed to load project');

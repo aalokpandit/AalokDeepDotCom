@@ -1,0 +1,27 @@
+import type { Project } from '@aalokdeep/types';
+
+const API_BASE =
+  process.env.API_BASE ||
+  process.env.NEXT_PUBLIC_API_BASE ||
+  'http://localhost:7071';
+
+export async function getProjectById(id: string): Promise<Project | null> {
+  try {
+    const response = await fetch(`${API_BASE}/api/projects/${id}`, {
+      next: { revalidate: 3600 },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data || null;
+  } catch (error) {
+    console.error(`Failed to fetch project ${id}:`, error);
+    return null;
+  }
+}
