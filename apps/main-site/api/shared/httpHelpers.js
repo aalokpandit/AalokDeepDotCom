@@ -44,6 +44,16 @@ function getCorsHeaders(request) {
       'Access-Control-Max-Age': '86400',
     };
   }
+
+  // Allow Azure Static Web Apps preview environments
+  if (origin.endsWith('.azurestaticapps.net')) {
+    return {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-ms-client-principal',
+      'Access-Control-Max-Age': '86400',
+    };
+  }
   
   // Check if origin is in allowed list
   const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -64,7 +74,7 @@ function getCorsHeaders(request) {
 function getCacheHeaders() {
   return {
     'Cache-Control': 'public, max-age=3600, s-maxage=3600',
-    'Vary': 'Accept-Encoding',
+    'Vary': 'Origin, Accept-Encoding',
   };
 }
 
