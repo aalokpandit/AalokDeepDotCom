@@ -1,11 +1,15 @@
-'use client';
-
-import { useParams } from 'next/navigation';
+import { getProjectById } from '@/lib/projects';
 import ProjectDetailClient from './ProjectDetailClient';
 
-export default function ProjectDetailPage() {
-  const params = useParams();
-  const projectId = (params?.id as string) || '';
+// Server-rendered per request so crawlers/agents get fully populated HTML without a rebuild.
+export const dynamic = 'force-dynamic';
 
-  return <ProjectDetailClient projectId={projectId} />;
+interface ProjectDetailPageProps {
+  params: { id: string };
+}
+
+export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
+  const project = await getProjectById(params.id);
+
+  return <ProjectDetailClient project={project} />;
 }

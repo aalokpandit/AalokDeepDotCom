@@ -1,11 +1,15 @@
-'use client';
-
-import { useParams } from 'next/navigation';
+import { getBlogById } from '@/lib/blogs';
 import PostDetailClient from './PostDetailClient';
 
-export default function PostDetailPage() {
-  const params = useParams();
-  const postId = params?.id as string;
+// Server-rendered per request so crawlers/agents get fully populated HTML without a rebuild.
+export const dynamic = 'force-dynamic';
 
-  return <PostDetailClient postId={postId} />;
+interface BlogDetailPageProps {
+  params: { id: string };
+}
+
+export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
+  const post = await getBlogById(params.id);
+
+  return <PostDetailClient post={post} />;
 }

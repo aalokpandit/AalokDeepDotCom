@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 import { ArrowLeft } from 'lucide-react';
 import { SocialShare } from '@aalokdeep/ui';
 import type { Blog } from '@aalokdeep/types';
-import { getBlogById } from '@/lib/blogs';
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -31,33 +30,14 @@ function formatPostDate(dateStr: string) {
 }
 
 interface PostDetailClientProps {
-  postId: string;
+  post: Blog | null;
 }
 
-export default function PostDetailClient({ postId }: PostDetailClientProps) {
-  const [post, setPost] = useState<Blog | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+/**
+ * Renders full post content from server-fetched data (no client-side loading state).
+ */
+export default function PostDetailClient({ post }: PostDetailClientProps) {
   const [showImage, setShowImage] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await getBlogById(postId);
-        if (!data) {
-          setError('Post not found');
-        }
-        setPost(data);
-      } catch (err) {
-        console.error('Failed to load post', err);
-        setError('Failed to load post');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
-  }, [postId]);
 
   const heroAlt = post?.heroImage?.alt || post?.title;
   const hasHero = Boolean(post?.heroImage?.url) && showImage;
@@ -80,27 +60,14 @@ export default function PostDetailClient({ postId }: PostDetailClientProps) {
     </Link>
   );
 
-  if (loading) {
-    return (
-      <main className="bg-[#FDFBF7]">
-        <div className="max-w-4xl mx-auto px-4 py-12 text-slate-800">
-          {header}
-          <div className="text-center">
-            <p className="text-slate-600">Loading post...</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  if (error || !post) {
+  if (!post) {
     return (
       <main className="bg-[#FDFBF7]">
         <div className="max-w-4xl mx-auto px-4 py-12 text-slate-800">
           {header}
           <div className="text-center">
             <h1 className="text-3xl font-bold text-slate-900 mb-4">Post Not Found</h1>
-            <p className="text-slate-600">{error || 'The post you are looking for does not exist.'}</p>
+            <p className="text-slate-600">The post you are looking for does not exist.</p>
           </div>
         </div>
       </main>
