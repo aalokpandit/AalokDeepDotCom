@@ -10,7 +10,10 @@ const navMain = [
   { href: 'https://aalokdeep.com/resume', label: 'Resume', external: true },
 ];
 
-const memoryLink = { href: 'https://memorygame.aalokdeep.com', label: 'Memory Game' };
+const gameLinks = [
+  { href: 'https://memorygame.aalokdeep.com', label: 'Memory Game' },
+  { href: 'https://minesweeper.aalokdeep.com', label: 'Minesweeper' },
+];
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -55,12 +58,17 @@ export function Header() {
               )
             )}
             <span aria-hidden className="text-slate-300">|</span>
-            <Link
-              href={memoryLink.href}
-              className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-            >
-              {memoryLink.label}
-            </Link>
+            {gameLinks.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              >
+                {label}
+              </a>
+            ))}
           </div>
 
           <button
@@ -113,13 +121,18 @@ export function Header() {
                 </Link>
               )
             )}
-            <Link
-              href={memoryLink.href}
-              className="block px-2 py-2 rounded-md hover:bg-slate-100 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-              onClick={() => setOpen(false)}
-            >
-              {memoryLink.label}
-            </Link>
+            {gameLinks.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                className="block px-2 py-2 rounded-md hover:bg-slate-100 hover:text-blue-600 transition-colors focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                onClick={() => setOpen(false)}
+              >
+                {label}
+              </a>
+            ))}
           </div>
         )}
       </nav>
