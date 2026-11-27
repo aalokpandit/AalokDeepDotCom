@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Workbench | Aalok Deep Pandit",
   description: "A showcase of projects, experiments, and portfolio work.",
   icons: {
-    icon: "/images/favicon.png",
+    icon: "https://aalokdeepassets.blob.core.windows.net/main-site/favicon.png",
   },
 };
 
