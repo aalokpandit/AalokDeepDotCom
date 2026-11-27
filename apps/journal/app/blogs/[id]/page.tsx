@@ -5,11 +5,12 @@ import PostDetailClient from './PostDetailClient';
 export const dynamic = 'force-dynamic';
 
 interface BlogDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
-  const post = await getBlogById(params.id);
+  const { id } = await params;
+  const post = await getBlogById(id);
 
   return <PostDetailClient post={post} />;
 }

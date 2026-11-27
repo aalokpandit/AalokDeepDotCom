@@ -5,11 +5,12 @@ import ProjectDetailClient from './ProjectDetailClient';
 export const dynamic = 'force-dynamic';
 
 interface ProjectDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const project = await getProjectById(params.id);
+  const { id } = await params;
+  const project = await getProjectById(id);
 
   return <ProjectDetailClient project={project} />;
 }
