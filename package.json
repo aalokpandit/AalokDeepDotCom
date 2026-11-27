@@ -36,5 +36,10 @@
     "dotenv": "^16.0.0",
     "husky": "^9.0.0",
     "cross-env": "^7.0.3"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1",
+    "postcss": "^8.5.23",
+    "postcss-selector-parser": "^6.1.5"
   }
 }
