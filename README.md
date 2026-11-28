@@ -72,7 +72,9 @@ No `.env.example` or `local.settings.json.example` files are checked into the re
 | Variable | Scope | Purpose / Default |
 | :--- | :--- | :--- |
 | `NEXT_PUBLIC_HEADSHOT_URL` | `apps/main-site` | Optional headshot image URL; defaults to `/images/AalokPanditHeadshot.png` |
+| `API_BASE` | `apps/workbench`, `apps/journal` | Optional server-side API base URL override; checked before `NEXT_PUBLIC_API_BASE` |
 | `NEXT_PUBLIC_API_BASE` | `apps/workbench`, `apps/journal` | Optional API base URL; defaults to `http://localhost:7071` |
+| `NEXT_PUBLIC_SITE_URL_WORKBENCH` / `NEXT_PUBLIC_SITE_URL_JOURNAL` / `NEXT_PUBLIC_SITE_URL` | `apps/workbench`, `apps/journal` | Optional canonical/OG site origin fallbacks when request `host` header is absent (default `http://localhost:3000`) |
 | `COSMOS_CONNECTION_STRING` | `apps/main-site/api` | Required Cosmos DB connection string (in `local.settings.json` locally) |
 | `AZURE_STORAGE_CONNECTION_STRING` | `apps/main-site/api` | Required Azure Storage connection string for Blob uploads |
 | `AZURE_STORAGE_ACCOUNT_NAME` | `apps/main-site/api` | Required Azure Storage account name for SAS URL generation |
@@ -138,7 +140,7 @@ Run all root scripts from the repository root (`/`):
 
 ### UI Tier: Next.js 15 Apps
 - **`apps/main-site`:** Uses `output: 'export'` (`next.config.mjs`) to generate static HTML in `out/`. `/resume` currently renders `<ComingSoon />`.
-- **`apps/workbench` & `apps/journal`:** Do **not** use `output: 'export'`, `generateStaticParams`, or `useEffect` data fetching. Both deploy on Azure SWA's hybrid/SSR Next.js runtime with `export const dynamic = 'force-dynamic'` on list and detail pages so Server Components render HTML per request (ensuring crawler/agent visibility) while caching API fetches via `{ next: { revalidate: 3600 } }`. List fetchers fail-soft to `[]` and detail fetchers fail-soft to `null` on API errors.
+- **`apps/workbench` & `apps/journal`:** Do **not** use `output: 'export'`, `generateStaticParams`, or `useEffect` data fetching. Both deploy on Azure SWA's hybrid/SSR Next.js runtime with `export const dynamic = 'force-dynamic'` on list and detail pages so Server Components render HTML per request (ensuring crawler/agent visibility) while caching API fetches via `{ next: { revalidate: 3600 } }`. List fetchers fail-soft to `[]` and detail fetchers fail-soft to `null` on API errors. Detail routes (`/projects/[id]` and `/blogs/[id]`) also export `generateMetadata` to emit per-entry `<title>`, description, `canonical`, OpenGraph, and Twitter card metadata using the live API response and incoming request host headers.
 - **Journal Rendering:** `apps/journal/app/blogs/[id]/PostDetailClient.tsx` normalizes literal `\\n` sequences, parses markdown with `marked`, strips a redundant leading heading matching `post.title`, and sanitizes HTML with `isomorphic-dompurify` before rendering with `@tailwindcss/typography` (`prose`).
 - **Routes & Redirects:** `workbench` redirects `/projects` → `/`; `journal` redirects `/blogs` → `/` and `/posts/[id]` → `/blogs/[id]`.
 - **Styling & Shared Packages:** All three `tailwind.config.ts` files include `../../packages/ui/**/*.{js,ts,jsx,tsx,mdx}` (excluding `node_modules`). `apps/workbench` and `apps/journal` override `RootLayout`'s centered `<main>` via `body main` rules in `globals.css` for top-aligned scrolling. Workspace apps import `@aalokdeep/ui` and `@aalokdeep/types` via root npm workspace hoisting.
