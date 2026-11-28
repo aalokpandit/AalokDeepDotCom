@@ -30,7 +30,8 @@ Notes:
   - Static HTML export in `out/`, using optional `NEXT_PUBLIC_HEADSHOT_URL` (falls back to `/images/AalokPanditHeadshot.png`).
 - **`apps/workbench` & `apps/journal` (Next.js App Router, Hybrid/SSR):**
   - Server Components export `export const dynamic = 'force-dynamic'` so Azure SWA's SSR runtime renders HTML per request (keeping content visible to crawlers/agents).
-  - Data fetchers (`apps/workbench/lib/projects.ts`, `apps/journal/lib/blogs.ts`) call `NEXT_PUBLIC_API_BASE` (fallback `http://localhost:7071`) with `{ next: { revalidate: 3600 } }`, failing soft to `[]` or `null` on error.
+  - Data fetchers (`apps/workbench/lib/projects.ts`, `apps/journal/lib/blogs.ts`) call `API_BASE || NEXT_PUBLIC_API_BASE` (fallback `http://localhost:7071`) with `{ next: { revalidate: 3600 } }`, failing soft to `[]` or `null` on error.
+  - Detail pages (`/projects/[id]`, `/blogs/[id]`) export `generateMetadata` to emit dynamic title, description, canonical URL, OpenGraph, and Twitter card tags at request time, deriving the origin from `x-forwarded-host`/`host` and `x-forwarded-proto` headers (falling back to `NEXT_PUBLIC_SITE_URL_WORKBENCH`/`NEXT_PUBLIC_SITE_URL_JOURNAL` → `NEXT_PUBLIC_SITE_URL` → `http://localhost:3000`).
 
 ## Data, API & Storage Tiers
 
@@ -67,10 +68,10 @@ Notes:
   - `/404` → shared `NotFound`
 - **`workbench`:**
   - `/` → server-rendered `ProjectCard` grid (`/projects` redirects 301 → `/`)
-  - `/projects/[id]` → server-rendered project detail page with collapsible sections & `SocialShare`
+  - `/projects/[id]` → server-rendered project detail page with dynamic OG/Twitter/canonical metadata, collapsible sections & `SocialShare`
 - **`journal`:**
   - `/` → server-rendered `JournalHomeClient` with client-side OR tag filtering (`/blogs` redirects 301 → `/`)
-  - `/blogs/[id]` → server-rendered detail page; `PostDetailClient` converts markdown via `marked` and sanitizes via `isomorphic-dompurify` (`/posts/[id]` redirects → `/blogs/[id]`)
+  - `/blogs/[id]` → server-rendered detail page with dynamic OG/Twitter/canonical metadata; `PostDetailClient` converts markdown via `marked` and sanitizes via `isomorphic-dompurify` (`/posts/[id]` redirects → `/blogs/[id]`)
 
 ## Rationale
 
