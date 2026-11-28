@@ -1,7 +1,10 @@
 import type { Project } from '@aalokdeep/types';
 import type { ProjectCardData } from '@/components/ProjectCard';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:7071';
+const API_BASE =
+  process.env.API_BASE ||
+  process.env.NEXT_PUBLIC_API_BASE ||
+  'http://localhost:7071';
 
 export async function getAllProjects(): Promise<ProjectCardData[]> {
   try {
