@@ -4,8 +4,14 @@ const path = require('path');
 // Source directory for shared assets
 const sourceDir = path.resolve(__dirname, '../packages/assets/public');
 
-// Destination directory for the application's public folder
-const destDir = path.resolve(__dirname, '../apps/main-site/public');
+// Destination directory for the current application's public folder
+// When invoked via an app's predev/prebuild script (e.g. apps/workbench), process.cwd() is that app directory.
+const repoRoot = path.resolve(__dirname, '..');
+const cwd = process.cwd();
+const isAppDir = path.dirname(cwd) === path.join(repoRoot, 'apps');
+const destDir = isAppDir
+  ? path.join(cwd, 'public')
+  : path.resolve(__dirname, '../apps/main-site/public');
 
 // --- Main execution ---
 console.log('--- Running pre-dev script: Copying shared assets ---');

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import PostDetailClient from './PostDetailClient';
 import { getBlogById } from '@/lib/blogs';
+import PostDetailClient from './PostDetailClient';
 
-interface PostDetailPageProps {
-  params: {
-    id: string;
-  };
+// Server-rendered per request so crawlers/agents get fully populated HTML without a rebuild.
+export const dynamic = 'force-dynamic';
+
+interface BlogDetailPageProps {
+  params: Promise<{ id: string }>;
 }
 
 const JOURNAL_SITE_URL =
@@ -14,8 +15,8 @@ const JOURNAL_SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
   'http://localhost:3000';
 
-function resolveRequestOrigin(): string {
-  const headerStore = headers();
+async function resolveRequestOrigin(): Promise<string> {
+  const headerStore = await headers();
   const host = headerStore.get('x-forwarded-host') || headerStore.get('host');
   const protocol =
     headerStore.get('x-forwarded-proto') ||
@@ -39,9 +40,10 @@ function normalizeImageUrl(imageUrl: string | undefined, origin: string): string
   return absoluteUrl(normalizedPath, origin);
 }
 
-export async function generateMetadata({ params }: PostDetailPageProps): Promise<Metadata> {
-  const post = await getBlogById(params.id);
-  const origin = resolveRequestOrigin();
+export async function generateMetadata({ params }: BlogDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const post = await getBlogById(id);
+  const origin = await resolveRequestOrigin();
 
   if (!post) {
     return {
@@ -85,6 +87,9 @@ export async function generateMetadata({ params }: PostDetailPageProps): Promise
   };
 }
 
-export default function PostDetailPage({ params }: PostDetailPageProps) {
-  return <PostDetailClient postId={params.id} />;
+export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
+  const { id } = await params;
+  const post = await getBlogById(id);
+
+  return <PostDetailClient post={post} />;
 }

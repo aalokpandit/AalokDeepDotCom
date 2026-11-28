@@ -1,7 +1,6 @@
 /**
  * Next.js config for workbench app.
- * - output: 'export' generates static HTML for SWA deployment
- * - Client-side useEffect calls fetch APIs dynamically for project data
+ * - No 'output: export': pages are server-rendered per request on Azure SWA's hybrid Next.js runtime
  * - images.unoptimized allows next/image without optimization
  * - remotePatterns allows Azure Blob Storage URLs
  */

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import ProjectDetailClient from './ProjectDetailClient';
 import { getProjectById } from '@/lib/projects';
+import ProjectDetailClient from './ProjectDetailClient';
+
+// Server-rendered per request so crawlers/agents get fully populated HTML without a rebuild.
+export const dynamic = 'force-dynamic';
 
 interface ProjectDetailPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 const WORKBENCH_SITE_URL =
@@ -14,8 +15,8 @@ const WORKBENCH_SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
   'http://localhost:3000';
 
-function resolveRequestOrigin(): string {
-  const headerStore = headers();
+async function resolveRequestOrigin(): Promise<string> {
+  const headerStore = await headers();
   const host = headerStore.get('x-forwarded-host') || headerStore.get('host');
   const protocol =
     headerStore.get('x-forwarded-proto') ||
@@ -40,8 +41,9 @@ function normalizeImageUrl(imageUrl: string | undefined, origin: string): string
 }
 
 export async function generateMetadata({ params }: ProjectDetailPageProps): Promise<Metadata> {
-  const project = await getProjectById(params.id);
-  const origin = resolveRequestOrigin();
+  const { id } = await params;
+  const project = await getProjectById(id);
+  const origin = await resolveRequestOrigin();
 
   if (!project) {
     return {
@@ -85,6 +87,9 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
   };
 }
 
-export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  return <ProjectDetailClient projectId={params.id} />;
+export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
+  const { id } = await params;
+  const project = await getProjectById(id);
+
+  return <ProjectDetailClient project={project} />;
 }

@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation';
 
 interface PostDetailRedirectProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function PostDetailRedirect({ params }: PostDetailRedirectProps) {
-  redirect(`/blogs/${params.id}`);
+export default async function PostDetailRedirect({ params }: PostDetailRedirectProps) {
+  const { id } = await params;
+  redirect(`/blogs/${id}`);
 }

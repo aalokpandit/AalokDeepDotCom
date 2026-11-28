@@ -1,77 +1,29 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import Collapsible from '@/components/Collapsible';
 import { SocialShare } from '@aalokdeep/ui';
 import type { Project } from '@aalokdeep/types';
-import { getProjectById } from '@/lib/projects';
 
 interface ProjectDetailClientProps {
-  projectId: string;
+  project: Project | null;
+}
+
+function formatProgressDate(dateStr: string) {
+  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+  const d = isDateOnly ? new Date(`${dateStr}T00:00:00`) : new Date(dateStr);
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 /**
- * Client component that fetches and displays full project details
- * Uses useEffect for client-side data fetching from API
- * Handles loading, error, and not-found states with appropriate UI
- * 
- * @param {Object} props - Component props
- * @param {string} props.projectId - The project ID to fetch and display
+ * Renders full project details from server-fetched data (no client-side loading state).
  */
-export default function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  function formatProgressDate(dateStr: string) {
-    const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
-    const d = isDateOnly ? new Date(`${dateStr}T00:00:00`) : new Date(dateStr);
-    return d.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }
-
-  useEffect(() => {
-    async function fetchProject() {
-      try {
-        const data = await getProjectById(projectId);
-        setProject(data);
-      } catch (err) {
-        console.error(`[ProjectDetail] Error fetching project ${projectId}:`, err);
-        setError(err instanceof Error ? err.message : 'Failed to load project');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProject();
-  }, [projectId]);
-
-  if (loading) {
-    return (
-      <main className="bg-[#FDFBF7]">
-        <div className="max-w-4xl mx-auto px-4 py-12 text-slate-800">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mb-8 transition-colors"
-          >
-            <ArrowLeft size={18} />
-            Back to Workbench
-          </Link>
-          <div className="text-center">
-            <p className="text-slate-600">Loading project...</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  if (error || !project) {
+export default function ProjectDetailClient({ project }: ProjectDetailClientProps) {
+  if (!project) {
     return (
       <main className="bg-[#FDFBF7]">
         <div className="max-w-4xl mx-auto px-4 py-12 text-slate-800">
@@ -87,7 +39,7 @@ export default function ProjectDetailClient({ projectId }: ProjectDetailClientPr
               Project Not Found
             </h1>
             <p className="text-slate-600">
-              {error || 'The project you\'re looking for doesn\'t exist.'}
+              The project you&apos;re looking for doesn&apos;t exist.
             </p>
           </div>
         </div>

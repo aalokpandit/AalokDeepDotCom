@@ -2,6 +2,8 @@ node_modules/
 .next/
 out/
 .env
+.env.*
+!.env.example
 .DS_Store
 .vscode/
 npm-debug.log*
@@ -11,4 +13,5 @@ coverage/
 apps/main-site/api/local.settings.json
 apps/main-site/public/images/
 apps/workbench/public/images/
+apps/journal/public/images/
 packages/assets/public/images/
